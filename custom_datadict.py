@@ -7,7 +7,10 @@ preid_reg_list = [r"(?<=Claim Number).*", r"(?<=Preauth Reference no).*", r"(?<=
                   r"(?<=CCN).*", r"(?<=Claim Number).*", r"(?<=claim no)\s+\S+", r"(?<=AL Number).*",
                   r"(?<=Incidence no).*", r"(?<=Cashless Authorization no).*(?=under Policy)", r"(?<=Customer ID).*",
                   r"(?<=CCN Number).*", r"(?<=File No.).*", r"(?<=CLAIM NUMBER).*", r"(?<=FIR NO).*", r"(?<=AL No).*",
-                  r"(?<=Claim Number AL).*(?=\()", r"(?<=Claim no).*(?=\()"]
+                  r"(?<=Claim Number AL).*(?=\()", r"(?<=Claim no).*(?=\()", r"(?<=UHC CASE ID).*",
+                  r"(?<=Claim Registration Number).*", r"(?<=Claim Number).*(?=Date)", r"(?<=Preauth ID).*",
+                  r"(?<=FIR No).*", r"(?<=Claim Control No).*", r"(?<=Cashless Authorization No).*(?=\.)",
+                  r"(?<=Claim Incident).*", r"(?<=Claim number).*(?=\()"]
 
 pname_reg_list = [r"", r"(?<=Patient Name).*(?=Age)", r"(?<=Patient Name).*", r"(?<=Name of Insured Patient).*(?=Age)",
                   r"(?<=Name of Insured-).*(?=Age)", r"(?<=Name Of Patient).*(?=AL)",
@@ -16,7 +19,9 @@ pname_reg_list = [r"", r"(?<=Patient Name).*(?=Age)", r"(?<=Patient Name).*", r"
                   r"(?<=Claim of).*", r"(?<=Name of the Patient).*(?=Policy)", r"(?<=PATIENT NAME).*",
                   r"(?<=of).*(?=Member ID)", r"(?<=TRUST\) Name).*", r"(?<=cashless benefit for Patient).*",
                   r"(?<=PATIENT NAME AND RELATION).*(?=-)", r"(?<=Claimant Name).*", r"(?<=Denial of Pre-Auth for).*",
-                  r"(?<=your Pre-authorization request for).*(?=and on)"]
+                  r"(?<=your Pre-authorization request for).*(?=and on)", r"(?<=Approval for Claim of).*(?=\()",
+                  r"(?<=Subject: Cashless Denial Of:).*(?=with Card)", r"(?<=PATIENT NAME).*(?=-)",
+                  r"(?<=Name of the patient).*", r"(?<=of).*(?=, *MemberID)"]
 
 polno_reg_list = [r"(?<=Policy No).*", r"(?<=Policy Number).*(?=Room)", r"(?<=Policy Number).*(?=Policy)",
                   r"(?<=Policy Number).*(?=Expected)", r"(?<=Policy Number).*", r"(?<=Policy No).*(?=Date)",
@@ -24,7 +29,8 @@ polno_reg_list = [r"(?<=Policy No).*", r"(?<=Policy Number).*(?=Room)", r"(?<=Po
                   r"(?<=Policy No).*", r"(?<=Policy number).*(?=Expected)",
                   r"(?<=Agent\/Dev Off:)\r?\n\s+\S+", r"(?<=policy no)\s+\S+", r"(?<=Policy No).*(?=Network)",
                   r"(?<=POLICY NO).*", r"(?<=under Policy)\s+\S+", r"(?<=Policy Number).*(?=Claim No)",
-                  r"(?<=Policy Number).*(?=Date of Admission)", r"(?<=POLICY NUMBER).*"]
+                  r"(?<=Policy Number).*(?=Date of Admission)", r"(?<=POLICY NUMBER).*",
+                  r"(?<=under your policy).*(?=as per below)", r"(?<=Policy).*(?=of)"]
 
 memid_reg_list = [r"(?<=Insurer Id of the Patient).*", r"(?<=Patient's Member UHID).*",
                   r"(?<=Membership no).*(?=Employee)", r"(?<=Membership No).*",
@@ -35,7 +41,10 @@ memid_reg_list = [r"(?<=Insurer Id of the Patient).*", r"(?<=Patient's Member UH
                   r"(?<=ID/TPA/Insurer Id of the Patient).*", r"(?<=MDID Number).*", r"(?<=MDI ID No).*",
                   r"(?<=MDID Number).*(?=Claim Number)", r"(?<=Medi Assist ID).*", r"(?<=Card No.).*",
                   r"(?<=TPA MEMBERSHIP ID).*", r"(?<=PHS ID).*", r"(?<=ID/TPA/Insured Id of the Patient).*",
-                  r"(?<=Member ID).*(?=Provisional Diagnosis)"]
+                  r"(?<=Member ID).*(?=Provisional Diagnosis)", r"(?<=Patient's Member ID).*",
+                  r"(?<=PHS ID).*(?=has been)", r"(?<=Card no.).*", r"(?<=Patient Card ID).*",
+                  r"(?<=ID Card \().*(?=\))", r"(?<=MemberID:).*", r"(?<=Member Code).*",
+                  r"(?<=ID/TPA/insurer Id of the Patient).*"]
 
 amount_reg_list = [r"", r"(?<=Total Authorized amount).*", r"(?<=Approved amount).*", r"(?<=Approved Amount).*",
                    r"(?<=Total Authorized Amount).*(?=\/)", r"(?<=NET Approved Amount)\S+\s+\S+",
@@ -43,12 +52,12 @@ amount_reg_list = [r"", r"(?<=Total Authorized amount).*", r"(?<=Approved amount
                    r"(?<=Total Authorized Amount).*", r"(?<=We hereby authorize and guarantee for payment of Rs)\s+\S+",
                    r"(?<=the authorization amount approved is Rs.)\s+\S+", r"(?<=Total Authorised Amount).*",
                    r"(?<=amount upto and not excedding Rs.)\s*\S+", r"(?<=Approved Amont).*",
-                   r"(?<=TOAL SANCTIONED AMOUNT).*", r"(?<=TOTAL AL ISSUED).*"]
+                   r"(?<=TOAL SANCTIONED AMOUNT).*", r"(?<=TOTAL AL ISSUED).*", r"(?<=NET Approved)\s*\S+"]
 
 diagno_reg_list = [r"", r"(?<=Ailment).*", r"(?<=Diagnosis).*", r"(?<=Diagnosis).*(?=\()",
                    r"(?<=Diagnosis & Proposed).*", r"(?<=Diagnosis).*(?=Proposed)", r"(?<=Provisional diagnosis).*",
                    r"(?<=Provisional Diagnosis).*(?=Sub Limit)", r"(?<=Diagnos is).*(?=Treatment)",
-                   r"(?<=Illness Details).*", r"(?<=DIAGNOSIS).*"]
+                   r"(?<=Illness Details).*", r"(?<=DIAGNOSIS).*", r"(?<=Provisional Diagnosis/Ailment).*(?=Status)"]
 
 insname_reg_list = [r"(?<=Insurance Co).*", r"(?<=Name of Insurance Co.).*", r"(?<=Name of Insurance Company).*",
                     r"(?<=Name of InsuranceCompany).*", r"(?<=Insurer).*",
@@ -59,7 +68,7 @@ doa_reg_list = [r"", r"(?<=Date of Admission).*", r"(?<=Date of admission).*(?=D
                 r"(?<=Date of admission).*", r"(?<=Expected Admission Date).*", r"(?<=Expected Date of Admission).*",
                 r"(?<=Date of Admission).*(?=Date of Discharge)", r"(?<=Probable DOA).*(?=&)",
                 r"(?<=DATE OF ADMISSION).*", r"(?<=Date Of Admission).*(?=Date)", r"(?<=Expected Date Of Admission).*",
-                r"(?<=Admission Date).*"]
+                r"(?<=Admission Date).*", r"(?<=Date of Admission).*(?=Copay)"]
 
 dod_reg_list = [r"", r"(?<=Date of Discharge).*", r"(?<=Date of discharge).*", r"(?<=Date Of D ischarge).*",
                 r"(?<=Date of Admission).*(?=Relationship)", r"(?<=Expected Discharge Date).*",
@@ -73,35 +82,38 @@ polhol_reg_list = [r"", r"(?<=Policy Holder).*", r"(?<=Primary Insured Name).*",
                    r"(?<=Insured’s Name).*", r"(?<=Emp/Member Name &).*(?=&)", r"(?<=Policy Holder Name).*",
                    r"(?<=Insured Name).*", r"(?<=Empl Name \/ ID).*(?=\/)", r"(?<=Employee / Insured).*",
                    r"(?<=Employee Name).*", r"(?<=Proposer Name).*(?=Hospital)", r"(?<=Insured Name).*(?=Patient Name)",
-                   r"(?<=INSURED NAME).*", r"(?<=EMPLOYEE NAME).*"]
+                   r"(?<=INSURED NAME).*", r"(?<=EMPLOYEE NAME).*", r"(?<=Policy Holder Name).*(?=Policy)",
+                   r"(?<=INSURED NAME).*(?=-)"]
 
 preid_val = r"^\S+$"
-pname_val = r"^\S+(?: \S+)*$"
+pname_val = r"^[a-zA-Z.]+(?: [a-zA-Z.]+)*$"
 polno_val = r"^\S+$"
 memid_val = r"^\S+$"
 amount_val = r"^[\d.]+$"
 diagno_val = r"^\S+(?: \S+)*$"
-insname_val = r"^\S+(?: \S+)*$"
+insname_val = r"^\S+(?: \S+){2,}$"
 doa_val = r"^\S+(?: \S+)*$"
 dod_val = r"^\S+(?: \S+)*$"
 corp_val = r"^\S+(?: \S+)*$"
-polhol_val = r"^\S+(?: \S+)*$"
+polhol_val = r"^[a-zA-Z.]+(?: [a-zA-Z.]+)*$"
 
+
+black_list = ['Details', 'Ltd', 'mpany Ltd,']
 
 def make_datadict(text_from_file):
     datadict = {}
     try:
         regexdict = {'preid': [preid_reg_list, preid_val, [':', '.']],
                      'pname': [pname_reg_list, pname_val, ['-', ':', 'MR.', 'Mr.']],
-                     'polno': [polno_reg_list, polno_val, [':', '.', '-']],
+                     'polno': [polno_reg_list, polno_val, [':', '.', '-', '(', ')']],
                      'memid': [memid_reg_list, memid_val, [':', '-']],
                      'amount': [amount_reg_list, amount_val, ['(Rs)', '-', ':', 'Rs.', '/', ',', 'Rs', '(INR)']],
-                     'diagno': [diagno_reg_list, diagno_val, [':', ]],
-                     'insname': [insname_reg_list, insname_val, [':', '.']],
+                     'diagno': [diagno_reg_list, diagno_val, [':', '-']],
+                     'insname': [insname_reg_list, insname_val, [':', '.', '-']],
                      'doa': [doa_reg_list, doa_val, [':', '000000']],
                      'dod': [dod_reg_list, dod_val, [':', '000000']],
                      'corp': [corp_reg_list, corp_val, [':', '-']],
-                     'polhol': [polhol_reg_list, polhol_val, [':', ]], }
+                     'polhol': [polhol_reg_list, polhol_val, ['-', ':', 'MR.', 'Mr.']], }
 
         for i in regexdict:
             for j in regexdict[i][0]:
@@ -112,8 +124,9 @@ def make_datadict(text_from_file):
                         temp = temp.replace(k, "")
                     temp = temp.strip()
                     if bool(re.compile(regexdict[i][1]).match(temp)):
-                        datadict[i] = temp
-                        break
+                        if temp not in black_list:
+                            datadict[i] = temp
+                            break
                 datadict[i] = ""
         return datadict
     except:
