@@ -1,21 +1,21 @@
-import sqlite3
-import subprocess
+from multiprocessing import Process
 
-ins = "east_west"
-process = "preauth"
-attach_path = "/home/akshay/temp/index/east_west/attachments_pdf_preauth/702567_authletter_702567_124732_8636.pdf"
-subject = "a"
-date = "20/10/2020 05:43:00"
+def f(x):
+    flag = True
+    for i in range(2, x):
+        if x%i == 0:
+            flag = False
+            break
+    return flag
 
-def get_run_no():
-    run_no, q = 1, "select runno from updation_detail_log order by runno desc limit 1;"
-    with sqlite3.connect('database1.db') as con:
-        cur = con.cursor()
-        result = cur.execute(q).fetchone()
-        if result is not None:
-            return str(result[0] + 1)
-    return str(run_no)
+if __name__ == '__main__':
+    p = Process(target=f, args=(23213,))
+    p.start()
+    p.join()
 
-run_no = get_run_no()
-subprocess.run(["python", ins + "_" + process + ".py", attach_path, run_no, ins, process, subject,
-                            date, 'max'])
+
+# if __name__ == '__main__':
+#     with Pool(5) as p:
+#         print(p.apply(f, [9576890767, 2860486313, 3367900313]))
+        # print(p.map(f, [34, 44, 67]))
+    # print(f(9576890767))
