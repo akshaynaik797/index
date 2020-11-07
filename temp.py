@@ -14,5 +14,7 @@ def f(x):
 
 
 if __name__ == '__main__':
-    with Pool(5) as p:
-        print(p.map(write, [(1, 10), (2, 2), (3, 1)]))
+    with Pool(9) as p:
+        print(p.map_async(write, [(1, 10), (2, 1), (3, 1), (4, 1), (5, 11), (6, 1), (7, 1), (8, 3), (9, 1)]))
+        p.close()
+        p.join()

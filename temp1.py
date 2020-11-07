@@ -7,6 +7,7 @@ def write(x):
     q = f"begin;" \
         f"insert into jobs (jobid, data) values ('{x[0]}', '{x[1]}');select pg_sleep('{x[1]}');" \
         f"commit;"
+    # f"insert into jobs (jobid, data) values ('{x[0]}', '{x[1]}');select pg_sleep('{x[1]}');" \
     cur.execute(q)
 if __name__ == "__main__":
     x = (1, 10)
