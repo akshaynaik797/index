@@ -19,9 +19,9 @@ subprocess.run(["python", "updation.py","1","max","8",sys.argv[6]])
 
 with open(sys.argv[1], "rb") as f:
     pdf = pdftotext.PDF(f)
-with open('paramount/output1.txt', 'w') as f:
+with open('Paramount/output1.txt', 'w') as f:
     f.write(" ".join(pdf))     
-with open('paramount/output1.txt', 'r') as myfile:
+with open('Paramount/output1.txt', 'r') as myfile:
     f = myfile.read()
 
 try:

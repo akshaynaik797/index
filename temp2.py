@@ -1,18 +1,8 @@
-import os
-import sys
-from email.mime.text import MIMEText
-import smtplib
-import time
-import imaplib
-import sys
-import email
-import os
-import struct, time
-import subprocess
-from datetime import date
-import datetime
-import openpyxl
-import sqlite3
+import psycopg2
 
-
-subprocess.run(["python", "updation.py","2","max","1","10" ])
+conn = psycopg2.connect(database="temp", user = "akshay", password = "41424344", host = "127.0.0.1", port = "5432")
+cur = conn.cursor()
+cur.execute('SELECT version()')
+db_version = cur.fetchone()
+print(db_version)
+pass
