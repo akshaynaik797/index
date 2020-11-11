@@ -5,17 +5,10 @@ import sys
 
 import pdftotext
 
-from custom_datadict import make_datadict
 from make_log import log_exceptions
+from custom_parallel import write
+from custom_datadict import make_datadict
 
-now = datetime.datetime.now()
-
-subprocess.run(["python", "updation.py", "1", "max1", "1", sys.argv[2]])
-subprocess.run(["python", "updation.py", "1", "max", "2", sys.argv[3]])
-subprocess.run(["python", "updation.py", "1", "max", "3", sys.argv[4]])
-subprocess.run(["python", "updation.py", "1", "max", "5", str(now)])
-subprocess.run(["python", "updation.py", "1", "max", "7", sys.argv[5]])
-subprocess.run(["python", "updation.py", "1", "max", "8", sys.argv[6]])
 
 with open(sys.argv[1], "rb") as f:
     pdf = pdftotext.PDF(f)
@@ -31,19 +24,14 @@ try:
         preid = preid.group()
     else:
         preid = ''
-    subprocess.run(["python", "updation.py", "1", "max", "9", 'Yes'])
-    subprocess.run(["python", "updation.py", "1", "max", "10", 'NA'])
-    try:
-        subprocess.run(
-            ["python", "test_api.py", preid, datadict['amount'], datadict['polno'], '',
-             'Denial', sys.argv[6], sys.argv[1], '', datadict['memid'], datadict['pname']])
-        subprocess.run(["python", "updation.py", "1", "max", "11", 'Yes'])
-    except Exception as e:
-        log_exceptions()
-        subprocess.run(["python", "updation.py", "1", "max", "11", 'No'])
-except Exception as e:
+
+    datadict['preid'] = preid
+
+    data = [i for i in sys.argv[1:]]
+    data2 = [datadict[i] for i in datadict]
+    data.extend(data2)
+    data3 = str(datadict).replace('{', '\{').replace('}', '\}')
+    data.append(data3)
+    write(data)
+except:
     log_exceptions()
-    subprocess.run(["python", "updation.py", "1", "max", "9", 'Yes'])
-    subprocess.run(["python", "updation.py", "1", "max", "11", 'No'])
-now = datetime.datetime.now()
-subprocess.run(["python", "updation.py", "1", "max", "6", str(now)])

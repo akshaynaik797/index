@@ -11,8 +11,9 @@ import time
 import requests
 
 from make_log import log_exceptions
+from custom_parallel import write
+from custom_datadict import make_datadict
 
-now = datetime.datetime.now()
 
 '''
 wbkName = 'log file.xlsx'
@@ -50,54 +51,12 @@ with open('united/output1.txt', 'r') as myfile:
 
 
 try:
-    hg = []
-    w = f.find('UHC CASE ID') + 12
-    g = f[w:]
-    u = g.find('\n') + w
-    hg.append(f[w:u])
-
-    status = 'Information Awaiting'
-    hg.append('')
-    hg.append('')
-    hg.append('')
-    regex = r"(?<=PATIENT NAME            :).*"
-    result = re.search(regex, f)
-    if result is not None:
-        x = result
-        x1 = x.group()
-        hg.append(x1)
-    else:
-        hg.append('')
-    hg = [sub.replace(':', '') for sub in hg]
-    hg = [sub.replace('  ', '') for sub in hg]
-    hg = [sub.replace('Rs.', '') for sub in hg]
-    #s2.cell(row_count_1+1, column=9).value='Yes'
-    #s2.cell(row_count_1+1, column=10).value='NA'
-    #wbk.save(wbkName)
-    
-    subprocess.run(["python", "updation.py","1","max","9",'Yes'])
-    subprocess.run(["python", "updation.py","1","max","10",'NA'])
-    
-    try:
-        subprocess.run(["python", "test_api.py",hg[0],'','','','Denial',sys.argv[6],sys.argv[1],'',hg[0],hg[4],hg[4]])
-        '''wbk= openpyxl.load_workbook(wbkName)
-        s2=wbk.worksheets[1]
-        s2.cell(row_count_1+1, column=11).value='YES'
-        '''
-        subprocess.run(["python", "updation.py","1","max","11",'Yes'])  
-    except Exception as e:
-        log_exceptions()
-        #s2.cell(row_count_1+1, column=11).value='NO'
-        subprocess.run(["python", "updation.py","1","max","11",'No'])
-except Exception as e:
+    datadict = make_datadict(f)
+    data = [i for i in sys.argv[1:]]
+    data2 = [datadict[i] for i in datadict]
+    data.extend(data2)
+    data3 = str(datadict).replace('{', '\{').replace('}', '\}')
+    data.append(data3)
+    write(data)
+except:
     log_exceptions()
-    #s2.cell(row_count_1+1, column=9).value='No'
-    #s2.cell(row_count_1+1, column=11).value='NO'
-    subprocess.run(["python", "updation.py","1","max","9",'Yes'])
-    subprocess.run(["python", "updation.py","1","max","11",'No'])
-now = datetime.datetime.now()
-#s2.cell(row_count_1+1, column=6).value=now
-#wbk.save(wbkName)
-subprocess.run(["python", "updation.py","1","max","6",str(now)])
-pass
-    

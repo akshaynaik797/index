@@ -2,6 +2,7 @@ import psycopg2
 
 def write(x):
     value, time = x[0], x[1]
+    print(f"job running is {x[0]}")
     conn = psycopg2.connect(database="temp", user="akshay", password="41424344", host="127.0.0.1", port="5432")
     cur = conn.cursor()
     q = f"begin;" \
