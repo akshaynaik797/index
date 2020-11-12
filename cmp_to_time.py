@@ -113,7 +113,7 @@ def mailid_time_subject(mail_id_list, mail, hid,formnowtime):
         log_data(inputlen=len(mail_id_list),outputlen=len(mlist),hid=hid,dbsubject=dbsubject,hdate=str(hdate),mail_id_list=mail_id_list,mlist=mlist,mlist1=templist)
         return mlist
     except:
-        log_exceptions(error='Complete failure of cmp_to_time', i= i)
+        log_exceptions(error='Complete failure of cmp_to_time')
         #call sms_api
         return mail_id_list
 

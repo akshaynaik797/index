@@ -34,7 +34,7 @@ import base64
 import foldercheck
 from email.header import decode_header
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask_cors import CORS, cross_origin
+# from flask_cors import CORS, cross_origin
 
 import pytz
 from datetime import datetime as akdatetime
@@ -65,9 +65,9 @@ sheduler_count = 0
 
 b = 0
 s_r = 0
-path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-#config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+# path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+# config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
 
 fo = open("defualt_time_read.txt", "r")
 t = fo.read()
@@ -77,7 +77,7 @@ app = Flask(__name__)
 
 app.config.from_object(app_config)
 Session(app)
-cors = CORS(app)
+# cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['referrer_url'] = None
 
@@ -280,9 +280,9 @@ def deltaMessage():
     #   log_api_data('r', r)
       # max_row = r[0][0]
       # row_count_1 = max_row + 1
-    # subprocess.run(["python", "updation.py", "0", "max1", "1", str(row_count_1)])
-    # subprocess.run(["python", "updation.py", "0", "max", "2", str(today)])
-    # subprocess.run(["python", "updation.py", "0", "max", "3", str(now)])
+    # #subprocess.run(["python", "updation.py", "0", "max1", "1", str(row_count_1)])
+    # #subprocess.run(["python", "updation.py", "0", "max", "2", str(today)])
+    # #subprocess.run(["python", "updation.py", "0", "max", "3", str(now)])
     #end of copy
     token = _get_token_from_cache(app_config.SCOPE)
     if not token:
@@ -483,8 +483,8 @@ def deltaMessage():
     # now = datetime.datetime.now()
     # today = datetime.date.today()
     # today = today.strftime('%d-%b-%Y')
-    # subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
-    # subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
+    # #subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
+    # #subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
     # add1()#formparameter add
 
     return jsonify(
@@ -1167,9 +1167,9 @@ def add1(formparameter):
     # log_api_data('r', r)
     max_row = r[0][0]
     row_count_1 = max_row + 1
-  subprocess.run(["python", "updation.py", "0", "max1", "1", str(row_count_1)])
-  subprocess.run(["python", "updation.py", "0", "max", "2", str(today)])
-  subprocess.run(["python", "updation.py", "0", "max", "3", str(now)])
+  #subprocess.run(["python", "updation.py", "0", "max1", "1", str(row_count_1)])
+  #subprocess.run(["python", "updation.py", "0", "max", "2", str(today)])
+  #subprocess.run(["python", "updation.py", "0", "max", "3", str(now)])
 
   if intervel == '':
     datetimeobject = datetime.datetime.strptime(fromtime, '%Y-%m-%d')
@@ -1221,10 +1221,10 @@ def add1(formparameter):
       try:
         mail.login(email, password)
         # print(mail.list_folders())
-        subprocess.run(["python", "updation.py", "0", "max", "6", 'YES'])
+        #subprocess.run(["python", "updation.py", "0", "max", "6", 'YES'])
       except Exception as e:
         log_exceptions()
-        subprocess.run(["python", "updation.py", "0", "max", "6", 'NO'])
+        #subprocess.run(["python", "updation.py", "0", "max", "6", 'NO'])
 
       mail.select(inbox, readonly=True)
 
@@ -1358,8 +1358,8 @@ def add1(formparameter):
       if len(mail.id_list) > 0 and mode == 'RANGE':
         # print(int(mail.id_list[-1].decode()),fg[-1],int(mail.id_list[-1].decode()) > int(fg[-1]))
         if len(fg) == 0 or int(mail.id_list[-1].decode()) > int(fg[-1]):
-          subprocess.run(["python", "updation.py", "0",
-                          "max", "7", str(len(mail.id_list))])
+          #subprocess.run(["python", "updation.py", "0",
+                          # "max", "7", str(len(mail.id_list))])
 
           print('new_mail')
           for j in range(0, len(mail.id_list)):
@@ -1376,7 +1376,8 @@ def add1(formparameter):
               process(now, today, mail, row_count_1, hid, fg, mode, nowtime)
 
         else:
-          subprocess.run(["python", "updation.py", "0", "max", "7", '0'])
+          #subprocess.run(["python", "updation.py", "0", "max", "7", '0'])
+          pass
         subprocess.run(
           ["python", "updation.py", "0", "max", "8", str(s_r)])
       pass
@@ -1396,8 +1397,8 @@ def add1(formparameter):
   now = datetime.datetime.now()
   today = datetime.date.today()
   today = today.strftime('%d-%b-%Y')
-  subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
-  subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
+  #subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
+  #subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
   # return str(msg)
   print(f"----Job is scheduled for every " + intervel + " seconds")
 
@@ -1688,16 +1689,16 @@ def process(now, today, mail, row_count_1, hid, fg, mode, nowtime):
                     download_pdf(s_r,mail,ic_name,table_name,row_count_1,subject,hid)
                     flag="true"
                     break
-                  subprocess.run(["python", "updation.py","2","max1","1",str(row_count_1)])
-                  subprocess.run(["python", "updation.py","2","max","2",'star'])
-                  subprocess.run(["python", "updation.py","2","max","4",str(now)])
-                  subprocess.run(["python", "updation.py","2","max","8",l_time])
-                  subprocess.run(["python", "updation.py","2","max","7", subject])
-                  subprocess.run(["python", "updation.py","2","max","17",str(mail.email_message['From'])])
-                  #subprocess.run(["python", "updation.py","2","max","15",str('subject not known')])
-                  subprocess.run(["python", "updation.py","2","max","20",str(mail.latest_email_id)[2:-1]])
-                  subprocess.run(["python", "updation.py","1","max","21",hid])
-                  #subprocess.run(["python", "updation.py","1","max","15",'error while downloading'])
+                  #subprocess.run(["python", "updation.py","2","max1","1",str(row_count_1)])
+                  #subprocess.run(["python", "updation.py","2","max","2",'star'])
+                  #subprocess.run(["python", "updation.py","2","max","4",str(now)])
+                  #subprocess.run(["python", "updation.py","2","max","8",l_time])
+                  #subprocess.run(["python", "updation.py","2","max","7", subject])
+                  #subprocess.run(["python", "updation.py","2","max","17",str(mail.email_message['From'])])
+                  ##subprocess.run(["python", "updation.py","2","max","15",str('subject not known')])
+                  #subprocess.run(["python", "updation.py","2","max","20",str(mail.latest_email_id)[2:-1]])
+                  #subprocess.run(["python", "updation.py","1","max","21",hid])
+                  ##subprocess.run(["python", "updation.py","1","max","15",'error while downloading'])
 
                   star_subject=mail.email_message['Subject']
                   w=star_subject.find('-')
@@ -1708,15 +1709,15 @@ def process(now, today, mail, row_count_1, hid, fg, mode, nowtime):
                     uid=mail.latest_email_id.decode()
                     if 'Intimation' in subject:
                       subprocess.run(["python", "main.py"," "," ","big",hid,uid,star_subject])
-                      subprocess.run(["python", "updation.py","1","max","3",'settlement_big'])
+                      #subprocess.run(["python", "updation.py","1","max","3",'settlement_big'])
                       break
                     else:
                       subprocess.run(["python", "main.py",' ',' ',"small",hid,uid,star_subject])
-                      subprocess.run(["python", "updation.py","1","max","3",'settlement_small'])
+                      #subprocess.run(["python", "updation.py","1","max","3",'settlement_small'])
                       break
                   else:
                     flag="true"
-                    subprocess.run(["python", "updation.py","1","max","3",table_name])
+                    #subprocess.run(["python", "updation.py","1","max","3",table_name])
                     subprocess.run(["python", "star_download.py",ccn,star_subject,l_time,str(row_count_1),table_name,hid])
                     break
               '''
@@ -1727,29 +1728,29 @@ def process(now, today, mail, row_count_1, hid, fg, mode, nowtime):
               print(subject, "=", subject_result)
 
               # NEED to raise error subject not known
-              subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
-              subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-              subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+              #subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
+              #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+              #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
               now = datetime.datetime.now()
-              subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-              subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
-              subprocess.run(["python", "updation.py", "2", "max", "15", str('subject not known')])
-              subprocess.run(["python", "updation.py", "2", "max", "20", str(mail.latest_email_id)[2:-1]])
-              subprocess.run(["python", "updation.py", "1", "max", "21", hid])
+              #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
+              #subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
+              #subprocess.run(["python", "updation.py", "2", "max", "15", str('subject not known')])
+              #subprocess.run(["python", "updation.py", "2", "max", "20", str(mail.latest_email_id)[2:-1]])
+              #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
               subprocess.run(["python", "sms_api.py", str('Updation failed for ' + mail.email_message['Subject'])])
               add_time_diff()
           else:
             # need to raise error if no subject
             print(subject)
-            subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
-            subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-            subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+            #subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
+            #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+            #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
             now = datetime.datetime.now()
-            subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-            subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
-            subprocess.run(["python", "updation.py", "2", "max", "20", str(mail.latest_email_id)[2:-1]])
-            subprocess.run(["python", "updation.py", "2", "max", "15", str('No subject found in database ')])
-            subprocess.run(["python", "updation.py", "1", "max", "21", hid])
+            #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
+            #subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
+            #subprocess.run(["python", "updation.py", "2", "max", "20", str(mail.latest_email_id)[2:-1]])
+            #subprocess.run(["python", "updation.py", "2", "max", "15", str('No subject found in database ')])
+            #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
             subprocess.run(
               ["python", "sms_api.py", str('No subject found in database ' + mail.email_message['Subject'])])
             add_time_diff()
@@ -1757,17 +1758,17 @@ def process(now, today, mail, row_count_1, hid, fg, mode, nowtime):
         else:
           # need to raise error for invalid email id
           print("invalid email " + from_email)
-          subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
-          subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+          #subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
+          #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
           now = datetime.datetime.now()
-          subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-          subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-          subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
-          subprocess.run(["python", "updation.py", "2", "max", "15", str('No email id found in database ')])
-          subprocess.run(["python", "updation.py", "2", "max", "20", str(mail.latest_email_id)[2:-1]])
+          #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
+          #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+          #subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
+          #subprocess.run(["python", "updation.py", "2", "max", "15", str('No email id found in database ')])
+          #subprocess.run(["python", "updation.py", "2", "max", "20", str(mail.latest_email_id)[2:-1]])
           subprocess.run(["python", "sms_api.py", str('No email id found in database  ' + subject)])
           add_time_diff()
-          subprocess.run(["python", "updation.py", "1", "max", "21", hid])
+          #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
 
   fo = open("defualt_time_read.txt", "a+")
   if (str(today) != str(tg[-1])):
@@ -1776,8 +1777,8 @@ def process(now, today, mail, row_count_1, hid, fg, mode, nowtime):
     today = datetime.date.today()
     today = today.strftime('%d-%b-%Y')
 
-    subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
-    subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
+    #subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
+    #subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
     print('done1')
 
 
@@ -1866,29 +1867,29 @@ def process_copy(result,now,today,row_count_1):
             print(subject, "=", subject_result)
 
             # NEED to raise error subject not known
-            subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
-            subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-            subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+            #subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
+            #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+            #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
             now = datetime.datetime.now()
-            subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-            subprocess.run(["python", "updation.py", "2", "max", "17", str(from_email)])
-            subprocess.run(["python", "updation.py", "2", "max", "15", str('subject not known')])
-            subprocess.run(["python", "updation.py", "2", "max", "20", i[0]])
-            subprocess.run(["python", "updation.py", "1", "max", "21", hid])
+            #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
+            #subprocess.run(["python", "updation.py", "2", "max", "17", str(from_email)])
+            #subprocess.run(["python", "updation.py", "2", "max", "15", str('subject not known')])
+            #subprocess.run(["python", "updation.py", "2", "max", "20", i[0]])
+            #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
             subprocess.run(["python", "sms_api.py", str('Updation failed for ' + subject)])
             add_time_diff()
         else:
           # need to raise error if no subject
           print(subject)
-          subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
-          subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-          subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+          #subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
+          #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+          #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
           now = datetime.datetime.now()
-          subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-          subprocess.run(["python", "updation.py", "2", "max", "17", from_email])
-          subprocess.run(["python", "updation.py", "2", "max", "20", i[0]])
-          subprocess.run(["python", "updation.py", "2", "max", "15", str('No subject found in database ')])
-          subprocess.run(["python", "updation.py", "1", "max", "21", hid])
+          #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
+          #subprocess.run(["python", "updation.py", "2", "max", "17", from_email])
+          #subprocess.run(["python", "updation.py", "2", "max", "20", i[0]])
+          #subprocess.run(["python", "updation.py", "2", "max", "15", str('No subject found in database ')])
+          #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
           subprocess.run(
             ["python", "sms_api.py", 'No subject found in database ' + subject])
           add_time_diff()
@@ -1896,17 +1897,17 @@ def process_copy(result,now,today,row_count_1):
       else:
         # need to raise error for invalid email id
         print("invalid email " + from_email)
-        subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
-        subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+        #subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
+        #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
         now = datetime.datetime.now()
-        subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-        subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-        subprocess.run(["python", "updation.py", "2", "max", "17", from_email])
-        subprocess.run(["python", "updation.py", "2", "max", "15", str('No email id found in database ')])
-        subprocess.run(["python", "updation.py", "2", "max", "20", i[0]])
+        #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
+        #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+        #subprocess.run(["python", "updation.py", "2", "max", "17", from_email])
+        #subprocess.run(["python", "updation.py", "2", "max", "15", str('No email id found in database ')])
+        #subprocess.run(["python", "updation.py", "2", "max", "20", i[0]])
         subprocess.run(["python", "sms_api.py", str('No email id found in database  ' + subject)])
         add_time_diff()
-        subprocess.run(["python", "updation.py", "1", "max", "21", hid])
+        #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
       try:
         a = 0
         with sqlite3.connect("database1.db") as con:
@@ -1931,8 +1932,8 @@ def process_copy(result,now,today,row_count_1):
     today = datetime.date.today()
     today = today.strftime('%d-%b-%Y')
 
-    subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
-    subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
+    #subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
+    #subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
     print('done1')
 
 
@@ -2017,13 +2018,13 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
   except Exception as e:
     log_exceptions()
 
-    subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
+    #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
 
     s_r += 1
-    subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
-    subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
-    subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
-    subprocess.run(["python", "updation.py", "1", "max", "15", 'error while downloading'])
+    #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
+    #subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
+    #subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
+    #subprocess.run(["python", "updation.py", "1", "max", "15", 'error while downloading'])
 
   if (t_p == 0):
     body_pdf = files.split(',')[0]
@@ -2042,7 +2043,7 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
       dol = 1
       #return 0
   if (dol == 1):
-    subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
+    #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
     try:
       if (ct == 'settlement'):
         try:
@@ -2058,12 +2059,12 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
         start_date = datetime.date.today().strftime("%d-%b-%Y")
         end_date = datetime.date.today().strftime("%d-%b-%Y")
         uid = mail.latest_email_id.decode()
-        subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
+        #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
         now = datetime.datetime.now()
-        subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-        subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-        subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-        subprocess.run(["python", "updation.py", "2", "max", "17", sender])
+        #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
+        #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+        #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+        #subprocess.run(["python", "updation.py", "2", "max", "17", sender])
         if ins == 'star':
           if 'Intimation' in subject:
             subprocess.run(["python", "main.py", " ", " ", "big", hid, uid, subject])
@@ -2081,26 +2082,27 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
            mail_id])
     except Exception as e:
       log_exceptions()
-      subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
+      #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
 
       s_r += 1
-      subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
-      subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
-      subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
-      subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-      subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+      #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
+      #subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
+      #subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
+      #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+      #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
       subprocess.run(
         ["python", "updation.py", "1", "max", "15", 'python file doesnot exist- ' + ins + '_' + ct + '.py'])
       print(e)
     try:
-      subprocess.run(["python", "updation.py", "1", "max", "19", filepath])
+      #subprocess.run(["python", "updation.py", "1", "max", "19", filepath])
+      pass
     except:
       pass
-    subprocess.run(["python", "updation.py", "1", "max", "21", hid])
-    subprocess.run(["python", "updation.py", "1", "max", "20", mail_id])
+    #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
+    #subprocess.run(["python", "updation.py", "1", "max", "20", mail_id])
 
     s_r += 1
-    subprocess.run(["python", "updation.py", "1", "max", "4", str(now)])
+    #subprocess.run(["python", "updation.py", "1", "max", "4", str(now)])
     add_time_diff()
     trigger_alert()
 
@@ -2152,7 +2154,7 @@ def download_html_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fi
   #     except Exception as e:
   #       log_exceptions()
   #       pass
-  subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
+  #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
   filePath = os.path.join(detach_dir, str(b) + '.pdf')
   # print(mail.email_message['Date'])
   '''
@@ -2183,12 +2185,12 @@ def download_html_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fi
       start_date = datetime.date.today().strftime("%d-%b-%Y")
       end_date = datetime.date.today().strftime("%d-%b-%Y")
       uid = mail.latest_email_id.decode()
-      subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
+      #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
       now = datetime.datetime.now()
-      subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-      subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-      subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-      subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
+      #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
+      #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+      #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+      #subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
       subprocess.run(["python", "main.py", start_date, end_date, ins, hid, uid, subject])
     else:
       fp2 = open(ins + "_" + ct + ".py", "r")
@@ -2201,23 +2203,23 @@ def download_html_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fi
         log_exceptions()
   except Exception as e:
     log_exceptions()
-    subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
+    #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
     # wbk.save(wbkName)
     s_r += 1
-    subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
-    subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
-    subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
-    subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-    subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-    subprocess.run(["python", "updation.py", "1", "max", "15", 'python file doesnot exist- ' + ins + '_' + ct + '.py'])
+    #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
+    #subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
+    #subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
+    #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+    #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+    #subprocess.run(["python", "updation.py", "1", "max", "15", 'python file doesnot exist- ' + ins + '_' + ct + '.py'])
     # print(e)
-  subprocess.run(["python", "updation.py", "1", "max", "19", filePath])
-  subprocess.run(["python", "updation.py", "1", "max", "20", mail_id])
-  subprocess.run(["python", "updation.py", "1", "max", "21", hid])
-  subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
+  #subprocess.run(["python", "updation.py", "1", "max", "19", filePath])
+  #subprocess.run(["python", "updation.py", "1", "max", "20", mail_id])
+  #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
+  #subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
   s_r = s_r + 1
 
-  subprocess.run(["python", "updation.py", "1", "max", "4", str(now)])
+  #subprocess.run(["python", "updation.py", "1", "max", "4", str(now)])
   add_time_diff()
 
 
@@ -2254,7 +2256,7 @@ def download_html(s_r, mail, ins, ct, row_count_1, subject, hid, l_time):
       except Exception as e:
         log_exceptions()
         pass
-  subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
+  #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
   mail.filePath = os.path.join(mail.detach_dir, str(b) + '.pdf')
   # print(mail.email_message['Date'])
   '''
@@ -2283,12 +2285,12 @@ def download_html(s_r, mail, ins, ct, row_count_1, subject, hid, l_time):
       start_date = datetime.date.today().strftime("%d-%b-%Y")
       end_date = datetime.date.today().strftime("%d-%b-%Y")
       uid = mail.latest_email_id.decode()
-      subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
+      #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
       now = datetime.datetime.now()
-      subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-      subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-      subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-      subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
+      #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
+      #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+      #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+      #subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
       subprocess.run(["python", "main.py", start_date, end_date, ins, hid, uid, subject])
     else:
       fp2 = open(ins + "_" + ct + ".py", "r")
@@ -2301,23 +2303,23 @@ def download_html(s_r, mail, ins, ct, row_count_1, subject, hid, l_time):
         log_exceptions()
   except Exception as e:
     log_exceptions()
-    subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
+    #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
     # wbk.save(wbkName)
     s_r += 1
-    subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
-    subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
-    subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
-    subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-    subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-    subprocess.run(["python", "updation.py", "1", "max", "15", 'python file doesnot exist- ' + ins + '_' + ct + '.py'])
+    #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
+    #subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
+    #subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
+    #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+    #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+    #subprocess.run(["python", "updation.py", "1", "max", "15", 'python file doesnot exist- ' + ins + '_' + ct + '.py'])
     # print(e)
-  subprocess.run(["python", "updation.py", "1", "max", "19", mail.filePath])
-  subprocess.run(["python", "updation.py", "1", "max", "20", str(mail.latest_email_id)[2:-1]])
-  subprocess.run(["python", "updation.py", "1", "max", "21", hid])
-  subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
+  #subprocess.run(["python", "updation.py", "1", "max", "19", mail.filePath])
+  #subprocess.run(["python", "updation.py", "1", "max", "20", str(mail.latest_email_id)[2:-1]])
+  #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
+  #subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
   s_r = s_r + 1
 
-  subprocess.run(["python", "updation.py", "1", "max", "4", str(now)])
+  #subprocess.run(["python", "updation.py", "1", "max", "4", str(now)])
   add_time_diff()
 
 
@@ -2402,20 +2404,20 @@ def download_pdf(s_r, mail, ins, ct, row_count_1, subject, hid, l_time):
   except Exception as e:
     log_exceptions()
 
-    subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
+    #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
 
     s_r += 1
-    subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
-    subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
-    subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
-    subprocess.run(["python", "updation.py", "1", "max", "15", 'error while downloading'])
+    #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
+    #subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
+    #subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
+    #subprocess.run(["python", "updation.py", "1", "max", "15", 'error while downloading'])
 
   if (t_p == 0):
     download_html(s_r, mail, ins, ct, row_count_1, subject, hid, l_time)
     trigger_alert()
     return 0
   if (dol == 1):
-    subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
+    #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
 
     '''
     l_time=mail.email_message['Date']
@@ -2443,12 +2445,12 @@ def download_pdf(s_r, mail, ins, ct, row_count_1, subject, hid, l_time):
         start_date = datetime.date.today().strftime("%d-%b-%Y")
         end_date = datetime.date.today().strftime("%d-%b-%Y")
         uid = mail.latest_email_id.decode()
-        subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
+        #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
         now = datetime.datetime.now()
-        subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-        subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-        subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-        subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
+        #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
+        #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+        #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+        #subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
         if ins == 'star':
           if 'Intimation' in subject:
             subprocess.run(["python", "main.py", " ", " ", "big", hid, uid, subject])
@@ -2466,23 +2468,23 @@ def download_pdf(s_r, mail, ins, ct, row_count_1, subject, hid, l_time):
            str(mail.latest_email_id)[2:-1]])
     except Exception as e:
       log_exceptions()
-      subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
+      #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
 
       s_r += 1
-      subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
-      subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
-      subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
-      subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-      subprocess.run(["python", "updation.py", "2", "max", "7", subject])
+      #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
+      #subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
+      #subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
+      #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
+      #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
       subprocess.run(
         ["python", "updation.py", "1", "max", "15", 'python file doesnot exist- ' + ins + '_' + ct + '.py'])
       print(e)
-    subprocess.run(["python", "updation.py", "1", "max", "19", mail.filePath])
-    subprocess.run(["python", "updation.py", "1", "max", "21", hid])
-    subprocess.run(["python", "updation.py", "1", "max", "20", str(mail.latest_email_id)[2:-1]])
+    #subprocess.run(["python", "updation.py", "1", "max", "19", mail.filePath])
+    #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
+    #subprocess.run(["python", "updation.py", "1", "max", "20", str(mail.latest_email_id)[2:-1]])
 
     s_r += 1
-    subprocess.run(["python", "updation.py", "1", "max", "4", str(now)])
+    #subprocess.run(["python", "updation.py", "1", "max", "4", str(now)])
     add_time_diff()
     trigger_alert()
 
@@ -2505,15 +2507,16 @@ def add_time_diff():
     b = "SELECT date,downloadtime,row_no  FROM updation_detail_log ORDER BY row_no DESC LIMIT 1"
     cur.execute(b)
     r = cur.fetchone()
-    if r[0] is not None and r[1] is not None and r[2] is not None:
-      time_diff = datetime.datetime.strptime(r[1], "%Y-%m-%d %H:%M:%S.%f").timestamp() - datetime.datetime.strptime(
-        r[0], "%d/%m/%Y %H:%M:%S").timestamp()
-      rowno = r[2]
-      query = f"update updation_detail_log set time_difference={int(time_diff)} where row_no={r[2]}"
-      cur.execute(query)
-      if int(time_diff) > 500:
-        time_diff = time_diff - 500
-        api_trigger(time_diff)
+    if r is not None:
+      if r[0] is not None and r[1] is not None and r[2] is not None:
+        time_diff = datetime.datetime.strptime(r[1], "%Y-%m-%d %H:%M:%S.%f").timestamp() - datetime.datetime.strptime(
+          r[0], "%d/%m/%Y %H:%M:%S").timestamp()
+        rowno = r[2]
+        query = f"update updation_detail_log set time_difference={int(time_diff)} where row_no={r[2]}"
+        cur.execute(query)
+        if int(time_diff) > 500:
+          time_diff = time_diff - 500
+          api_trigger(time_diff)
 
 
 # ------------------------------
