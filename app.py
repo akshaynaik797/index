@@ -1788,13 +1788,14 @@ def process_copy(result,now,today,row_count_1):
               cur.execute(b)
               result_temp = cur.fetchall()
               if len(result_temp) > 0:
+                  result_temp = [i[0] for i in result_temp]
                   if from_email in result_temp:
                       q1 = "update graphApi set completed = 'DD' where date = %s;"
                       data = (i[2],)
                       cur.execute(q1, data)
                       con.commit()
                       with open('logs/dd_queries.log', 'a') as temp_fp:
-                          print(str(datetime.datetime.now()), str(cur._last_executed), file=temp_fp, sep=',')
+                          print(str(datetime.datetime.now()), str(cur.statement), file=temp_fp, sep=',')
       except:
           log_exceptions()
       if check_if_sub_and_ltime_exist(subject, l_time):
@@ -2737,11 +2738,11 @@ def temp_fun():
     #       pass
 
 ####for test purpose
-# print("Scheduler is called.")
-# sched = BackgroundScheduler(daemon=False)
-# sched.add_job(add1, 'interval', seconds=10, max_instances=1)
-# sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
-# sched.start()
+print("Scheduler is called.")
+sched = BackgroundScheduler(daemon=False)
+sched.add_job(add1, 'interval', seconds=10, max_instances=1)
+sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
+sched.start()
 ###
 
 if __name__ == '__main__':

@@ -1459,13 +1459,14 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
                     cur.execute(b)
                     result_temp = cur.fetchall()
                     if len(result_temp) > 0:
+                        result_temp = [i[0] for i in result_temp]
                         if i[6] in result_temp:
                             q1 = f"update {hid}_mails set completed = 'DD' where date = %s;"
                             data = (i[2],)
                             cur.execute(q1, data)
                             con.commit()
                             with open('logs/dd_queries.log', 'a') as temp_fp:
-                                print(str(datetime.datetime.now()), str(cur._last_executed), file=temp_fp, sep=',')
+                                print(str(datetime.datetime.now()), str(cur.statement), file=temp_fp, sep=',')
             except:
                 log_exceptions()
             print('in loop', len(i))
