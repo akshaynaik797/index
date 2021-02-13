@@ -1781,20 +1781,22 @@ def process_copy(result,now,today,row_count_1):
       subject, l_time, files, from_email, hid, mail_id = i[1], i[2], i[4], i[6], 'Max PPT', i[0]
       subject = subject.replace("\r", "")
       subject = subject.replace("\n", "")
-      with mysql.connector.connect(**conn_data) as con:
-          cur = con.cursor()
-          b = "SELECT email_ids FROM email_ids;"
-          cur.execute(b)
-          result_temp = cur.fetchall()
-          if len(result_temp) > 0:
-              if from_email in result_temp:
-                  q1 = "update graphApi set completed = 'DD' where date = %s;"
-                  data = (i[2],)
-                  cur.execute(q1, data)
-                  con.commit()
-                  with open('logs/dd_queries.log', 'a') as temp_fp:
-                      print(str(datetime.datetime.now()), str(cur._last_executed), file=temp_fp, sep=',')
-
+      try:
+          with mysql.connector.connect(**conn_data) as con:
+              cur = con.cursor()
+              b = "SELECT email_ids FROM email_ids;"
+              cur.execute(b)
+              result_temp = cur.fetchall()
+              if len(result_temp) > 0:
+                  if from_email in result_temp:
+                      q1 = "update graphApi set completed = 'DD' where date = %s;"
+                      data = (i[2],)
+                      cur.execute(q1, data)
+                      con.commit()
+                      with open('logs/dd_queries.log', 'a') as temp_fp:
+                          print(str(datetime.datetime.now()), str(cur._last_executed), file=temp_fp, sep=',')
+      except:
+          log_exceptions()
       if check_if_sub_and_ltime_exist(subject, l_time):
         continue
       try:
