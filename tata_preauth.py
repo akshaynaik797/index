@@ -5,16 +5,12 @@ import sys
 import pdftotext
 
 from make_log import log_exceptions
-from mult1 import write
+from custom_parallel import write
+from custom_app import set_flag_graphapi
 
-now = datetime.datetime.now()
+set_flag_graphapi(sys.argv[5], sys.argv[6], 'E',sys.argv[7])
 
-
-
-
-
-
-
+start = datetime.datetime.now()
 
 with open(sys.argv[1], "rb") as f:
     pdf = pdftotext.PDF(f)
@@ -94,15 +90,18 @@ try:
         data = [i for i in sys.argv[1:]]
         data2 = [datadict[i] for i in datadict]
         data.extend(data2)
-        data3 = str(datadict).replace('{', '\{').replace('}', '\}')
+        data3 = str(datadict)
         data.append(data3)
+        end = datetime.datetime.now()
+        data.append(str(start))
+        data.append(str(end))
+        diff = end - start
+        diff = str(diff.total_seconds())
+        data.append(diff)
         write(data)
-        a = 1
-        '''wbk= openpyxl.load_workbook(wbkName)
-        s2=wbk.worksheets[1]
-        s2.cell(row_count_1+1, column=11).value='YES'
-        '''
-        
+        set_flag_graphapi(sys.argv[5], sys.argv[6], 'X',sys.argv[7])
+
+
     except Exception as e:
         log_exceptions()
         # s2.cell(row_count_1+1, column=11).value='NO'

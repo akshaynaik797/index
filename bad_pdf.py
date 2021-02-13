@@ -6,8 +6,8 @@ from pdf2image import convert_from_path
 import os
 from make_log import log_exceptions
 
-# pytesseract_location = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-# pytesseract.pytesseract.tesseract_cmd = pytesseract_location
+#pytesseract_location = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+#pytesseract.pytesseract.tesseract_cmd = pytesseract_location
 
 
 def text_from_pdf(pdf_path, outfile):
@@ -23,12 +23,13 @@ def text_from_pdf(pdf_path, outfile):
         '''
 
         # Store all the pages of the PDF in a variable
-        pages = convert_from_path(PDF_file, 500)
+        pages = convert_from_path(PDF_file, 200)
 
         # Counter to store images of each page of PDF to image
         image_counter = 1
 
         # Iterate through all the pages stored above
+        pages = pages[:2] + pages[-1]
         for page in pages:
             # Declaring filename for each page of PDF as JPG
             # For each page, filename will be:

@@ -35,11 +35,11 @@ if len(id_list)>0:
         if bool(fileName):
             if(fileName.find('DECLARATION')==-1):
                 if sys.argv[2] == 'preauth':
-                    filePath = os.path.join(r'C:/Apache24/htdocs/www/myapp/app/index/Raksha/attachments_pdf_preauth', sys.argv[1])
+                    filePath = os.path.join(r'/home/ubuntu/index/index/Raksha/attachments_pdf_preauth', sys.argv[1])
                 elif sys.argv[2] == 'query':
-                    filePath = os.path.join(r'C:/Apache24/htdocs/www/myapp/app/index/Raksha/attachments_pdf_query', sys.argv[1])
+                    filePath = os.path.join(r'/home/ubuntu/index/index/Raksha/attachments_pdf_query', sys.argv[1])
                 elif sys.argv[2] == 'denial':
-                    filePath = os.path.join(r'C:/Apache24/htdocs/www/myapp/app/index/Raksha/attachments_pdf_denial', sys.argv[1])
+                    filePath = os.path.join(r'/home/ubuntu/index/index/Raksha/attachments_pdf_denial', sys.argv[1])
 
                 if not os.path.isfile(filePath) :
                 

@@ -1,30 +1,31 @@
-import sqlite3
+import mysql.connector
 import os
-from make_log import log_exceptions
 
+from custom_parallel import conn_data
+from make_log import log_exceptions
 
 fpname = 'fp_seq.txt'
 
 
 def fp_seq_init():
-  if not os.path.isfile(fpname):
-    with open(fpname, 'w') as fp:
-      fp.write('1')
+    if not os.path.isfile(fpname):
+        with open(fpname, 'w') as fp:
+            fp.write('1')
+
 
 def get_fp_seq():
-  fp_seq_init()
-  with open(fpname) as fp:
-    num = fp.read()
-  with open(fpname, 'w') as fp:
-    fp.write(str(int(num)+1))
-  return num
+    fp_seq_init()
+    with open(fpname) as fp:
+        num = fp.read()
+    with open(fpname, 'w') as fp:
+        fp.write(str(int(num) + 1))
+    return num
 
 
 def check_if_sub_and_ltime_exist(subject, l_time):
     try:
         subject = subject.replace("'", '')
-        with sqlite3.connect("database1.db") as con:
-            xyz = 10
+        with mysql.connector.connect(**conn_data) as con:
             cur = con.cursor()
             b = f"select * from updation_detail_log where emailsubject like '%{subject}%' and date='{l_time}'"
             cur.execute(b)
@@ -33,9 +34,34 @@ def check_if_sub_and_ltime_exist(subject, l_time):
                 return True
             return False
     except:
-        False
+        return False
+
+
+def set_flag_graphapi(subject, l_time, flag, hospital):
+    try:
+        hosp_dict = {
+            'Max PPT': 'graphApi',
+            'inamdar': 'inamdar_mails',
+            'noble': 'noble_mails',
+            'ils': 'ils_mails',
+            'ils_howrah': 'ils_howrah_mails',
+            'ils_agartala': 'ils_agartala_mails',
+            'ils_dumdum': 'ils_dumdum_mails'
+        }
+        data, data1 = (subject, l_time), (flag, subject, l_time, )
+        with mysql.connector.connect(**conn_data) as con:
+            cur = con.cursor()
+            b = f'select * from updation_detail_log where emailsubject = %s  and date = %s limit 1;'
+            cur.execute(b, data)
+            a = cur.fetchone()
+        if a is not None:
+            with mysql.connector.connect(**conn_data) as con:
+                cur = con.cursor()
+                b = f"update {hosp_dict[hospital]} set completed=%s where subject = %s and date = %s"
+                cur.execute(b, data1)
+                con.commit()
+    except:
+        log_exceptions(data1=data1)
 
 if __name__ == "__main__":
-    l_time = '05/10/2020 13:01:02'
-    subject = "Cashless Letter From Raksha Health Insurance TPA Pvt.Ltd. (O55611157790,212200/48/2021/54,PRAKHATI MEHANI.)"
-    print(check_if_sub_and_ltime_exist(subject, l_time))
+    set_flag_graphapi('Welcome', '19/12/2020 13:17:22', 'sample')

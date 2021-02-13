@@ -1,5 +1,7 @@
 import json
-import sqlite3
+import mysql.connector
+
+from custom_parallel import conn_data
 from make_log import log_data
 
 import requests
@@ -11,7 +13,7 @@ def api_trigger(time_diff):
     headers = {
         'Content-Type': 'application/json'
     }
-    with sqlite3.connect("database1.db") as con:
+    with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
         b = f"SELECT * from mob_app"
         cur.execute(b)
@@ -37,7 +39,7 @@ def api_update_trigger(ref_no, comment, status):
     headers = {
         'Content-Type': 'application/json'
     }
-    with sqlite3.connect("database1.db") as con:
+    with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
         b = f"SELECT * from mob_app"
         cur.execute(b)

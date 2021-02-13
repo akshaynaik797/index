@@ -28,8 +28,7 @@ from make_log import log_exceptions
 
 fg = []
 repeat = []
-path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
 wq = 0
 
 

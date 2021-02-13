@@ -2,6 +2,8 @@ import sqlite3
 
 import requests
 
+from custom_parallel import conn_data
+import mysql.connector
 from make_log import log_exceptions
 from push_api import api_update_trigger
 
@@ -11,7 +13,7 @@ def get_update_log(row_no):
     ref_no, comment, status = "", "", ""
     local_dict = {}
     try:
-        with sqlite3.connect("database1.db") as con:
+        with mysql.connector.connect(**conn_data) as con:
             cur = con.cursor()
             b = f"select  preauthid,policyno,memberid,comment,hos_id,status  from updation_detail_log where row_no = '{row_no}'"
             cur.execute(b)

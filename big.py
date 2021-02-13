@@ -30,9 +30,9 @@ try:
                           fill_type='solid')
     fg = []
     eu = []
-    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-    # config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+    # path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
 
 
 

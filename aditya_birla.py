@@ -34,9 +34,9 @@ from make_log import log_exceptions
 try:
     subprocess.run(["python", "updation.py", "1", "max", "9", "X"])
     fg = []
-    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-    # config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
+    # path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
 
     def read_email_from_gmail():
         SMTP_SERVER = str(sys.argv[5])

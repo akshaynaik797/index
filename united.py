@@ -31,8 +31,7 @@ from make_log import log_exceptions
 try:
     subprocess.run(["python", "updation.py", "1", "max", "9", "X"])
 
-    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
     if path.exists(r'united/united' + str(sys.argv[6]) + '.xlsx'):
         os.remove(r'united/united' + str(sys.argv[6]) + '.xlsx')
     import openpyxl

@@ -1,6 +1,7 @@
-import sqlite3
+import mysql.connector
 
-dbpath = 'database1.db'
+from custom_parallel import conn_data
+
 
 city_records_fields = ["Advice_No", 'Insurer_name', 'City_Transaction_Reference', 'Payer_Reference_No',
                        'Payment_Amount', 'Processing_Date', 'City_Claim_No', 'City_Patient_name', 'City_Admission_Date',
@@ -15,7 +16,7 @@ nic_records_fields = ['Transaction_Reference_No', 'Policy_Number', 'Claim_Number
 
 def get_from_db(var):
     city, nic, nic_records = dict(), dict(), dict()
-    with sqlite3.connect(dbpath) as con:
+    with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
         q = f"SELECT * from City_Records where City_Transaction_Reference='{var}'"
         cur.execute(q)

@@ -2,10 +2,14 @@ import sqlite3
 import subprocess
 import pdftotext
 from custom_datadict import make_datadict
+import mysql.connector
 
-ins = "icici_lombard"
+from custom_parallel import conn_data
+
+ins = "Paramount"
 process = "preauth"
-attach_path = "/home/akshay/PycharmProjects/index/icici_lombard/attachments_preauth/15.pdf"
+mail_id = '7777'
+attach_path = r"C:\Apache24\htdocs\www\myapp\app\index2\index\index\Paramount\attachments_preauth\221.pdf"
 subject = "a"
 date = "20/10/2020 05:43:00"
 
@@ -18,14 +22,15 @@ with open('aditya/output1.txt', 'r') as myfile:
 
 
 data = make_datadict(f)
-pass
+z =1
 
 
 def get_run_no():
-    run_no, q = 1, "select runno from updation_detail_log order by runno desc limit 1;"
-    with sqlite3.connect('database1.db') as con:
+    run_no, q = 1, "SELECT COUNT(*) FROM updation_log;"
+    with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
-        result = cur.execute(q).fetchone()
+        cur.execute(q)
+        result = cur.fetchone()
         if result is not None:
             return str(result[0] + 1)
     return str(run_no)
@@ -33,4 +38,6 @@ def get_run_no():
 
 run_no = get_run_no()
 subprocess.run(["python", ins + "_" + process + ".py", attach_path, run_no, ins, process, subject,
-                            date, 'max'])
+                            date, 'max', mail_id])
+# d = ['python', 'aditya_query.py', 'C:\\Apache24\\htdocs\\www\\myapp\\app\\index2\\index\\index/aditya/attachments_pdf_query/11-17-0046426-03-00_16673.pdf', '11053', 'aditya', 'query', 'Additional information required', '06/11/2020 17:26:41', 'Max', 'AAMkADMwMDQ2MWEwLWZmNjgtNGU1ZS05YmIyLWViMmY0MDY5MzA5NABGAAAAAABH2uYMVCRVRratBBRFfMEGBwDDBdWtz139QJTyVusjXSMMAIgnyAxbAACzb7cgXsgfSqOzUEFTGZMcAALGZXr5AAA=']
+# subprocess.run(d)

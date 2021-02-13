@@ -34,8 +34,7 @@ try:
     subprocess.run(["python", "updation.py", "1", "max", "9", "X"])
     eu = []
     repeat = []
-    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+    config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
     from openpyxl.styles import Color, PatternFill, Font, Border
 
     redFill = PatternFill(start_color='FFFF0000',

@@ -5,9 +5,12 @@ import sys
 import pdftotext
 
 from make_log import log_exceptions
-from mult1 import write
-now = datetime.datetime.now()
+from custom_parallel import write
+from custom_app import set_flag_graphapi
 
+set_flag_graphapi(sys.argv[5], sys.argv[6], 'E',sys.argv[7])
+
+start = datetime.datetime.now()
 
 with open(sys.argv[1], "rb") as f:
     pdf = pdftotext.PDF(f)
@@ -87,28 +90,21 @@ try:
         data = [i for i in sys.argv[1:]]
         data2 = [datadict[i] for i in datadict]
         data.extend(data2)
-        data3 = str(datadict).replace('{', '\{').replace('}', '\}')
+        data3 = str(datadict)
         data.append(data3)
+        end = datetime.datetime.now()
+        data.append(str(start))
+        data.append(str(end))
+        diff = end - start
+        diff = str(diff.total_seconds())
+        data.append(diff)
+
         write(data)
+        set_flag_graphapi(sys.argv[5], sys.argv[6], 'X',sys.argv[7])
 
 
-        
-        '''wbk= openpyxl.load_workbook(wbkName)
-        s2=wbk.worksheets[1]
-        s2.cell(row_count_1+1, column=11).value='YES'
-        '''
-        
     except Exception as e:
         log_exceptions()
-        # s2.cell(row_count_1+1, column=11).value='NO'
-        
+
 except Exception as e:
     log_exceptions()
-    # s2.cell(row_count_1+1, column=9).value='No'
-    # s2.cell(row_count_1+1, column=11).value='NO'
-    
-    
-now = datetime.datetime.now()
-# s2.cell(row_count_1+1, column=6).value=now
-# wbk.save(wbkName)
-

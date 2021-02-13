@@ -1,4 +1,3 @@
-import pylint
 import pdftotext
 import sqlite3
 import datetime

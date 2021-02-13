@@ -1,11 +1,13 @@
 import email
 import imaplib
+import mysql.connector
 import sqlite3
 import pytz
 from email.header import decode_header
 from datetime import datetime as akdatetime
 from dateutil import parser as date_parser
 from cust_time_functs import ifutc_to_indian
+from custom_parallel import conn_data
 from make_log import log_data, log_exceptions
 from percentage import get_percentage
 
@@ -143,7 +145,7 @@ def cmp(hdate, mdate):
 
 def get_latest_time_from_db(hid):
     try:
-        with sqlite3.connect("database1.db") as con:
+        with mysql.connector.connect(**conn_data) as con:
             cur = con.cursor()
             b = f"SELECT date,emailsubject,mail_id  FROM updation_detail_log where hos_id='{hid}' ORDER BY row_no DESC LIMIT 1"
             cur.execute(b)

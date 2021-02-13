@@ -2,7 +2,7 @@ import email
 import imaplib
 
 inamh = (1, 'inamdar hospital', 'mediclaim@inamdarhospital.org', 'Mediclaim@2019', 'imap.gmail.com', 'inbox', 'X')
-maxh = (2, 'Max PPT', 'Tpappg@maxhealthcare.com', 'Sept@2020', 'outlook.office365.com', 'inbox', 'X')
+maxh = (2, 'Max PPT', 'Tpappg@maxhealthcare.com', 'Dec@2020', 'outlook.office365.com', 'inbox', 'X')
 
 def mail_body_to_text(mailsubject, hid):
     if 'Max' in hid:
@@ -18,7 +18,7 @@ def mail_body_to_text(mailsubject, hid):
     mail.login(user, pwd)
     mail.select("inbox", readonly=True)
     type, data = mail.search(None, f'(SUBJECT "{mailsubject}")')
-    mid = data[0]
+    mid = data[0].split(b' ')[-1]
     result, data = mail.fetch(mid, "(RFC822)")
     raw_email = data[0][1].decode('utf-8')
     email_message = email.message_from_string(raw_email)
