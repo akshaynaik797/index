@@ -1792,6 +1792,8 @@ def process_copy(result,now,today,row_count_1):
                   data = (i[2],)
                   cur.execute(q1, data)
                   con.commit()
+                  with open('logs/dd_queries.log', 'a') as temp_fp:
+                      print(str(datetime.datetime.now()), str(cur._last_executed), file=temp_fp, sep=',')
 
       if check_if_sub_and_ltime_exist(subject, l_time):
         continue
