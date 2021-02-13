@@ -120,7 +120,7 @@ def get_sms_mails():
         temp = {}
         for key, value in zip(fields, i):
             temp[key] = value
-        temp['attach_path'] = link_text + temp['attach_path']
+        temp['attach_path'] = link_text + temp['attach_path'].replace(',', '')
         result.append(temp)
     return jsonify(result)
 
@@ -154,9 +154,10 @@ def send_sms_text(mobile_no, body):
                 }
             ]
         }
-        r = requests.post(url=API_ENDPOINT, data=json.dumps(data), headers=headers)
+        # r = requests.post(url=API_ENDPOINT, data=json.dumps(data), headers=headers)
         custom_log_data(filename="sms_body", no=mobile_no, body=body)
-        return r.status_code
+        # return r.status_code
+        return 400
     except:
         log_exceptions()
 
@@ -178,7 +179,7 @@ def check_date():
     with mysql.connector.connect(**conn_data) as con:
         for temp, i in record_dict.items():
             cur = con.cursor()
-            q = f"select subject, date, completed, attach_path, sno from {i['table_name']} where completed not in ('p', 'X', '', 'S') and sno > %s"
+            q = f"select subject, date, completed, attach_path, sno from {i['table_name']} where completed not in ('p', 'X', '', 'S', 'DD') and sno > %s"
             cur.execute(q, (i['sno'],))
             result = cur.fetchall()
             for j in result:
