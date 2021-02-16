@@ -6,6 +6,7 @@ import pandas as pd
 import pdfplumber
 
 from custom_parallel import conn_data
+from make_log import log_exceptions
 
 def param():
     with mysql.connector.connect(**conn_data) as con:
@@ -87,25 +88,26 @@ def process_p_flag_mails():
             mails_dict[table] = records
     for hosp in mails_dict:
         for row in mails_dict[hosp]:
-            row_count_1 = 1
-            filepath = row['attach_path']
-            temp = get_pdf_ins_process(filepath)
-            ins, ct = temp['insurer'], temp['process']
-            subject, l_time, hid, mail_id = row['subject'], row['date'], hosp, row['id']
-            subject = subject + '_' + mail_id
-            if '_' in hid:
-                hid = hid.split('_')[0]
-            if ins != '' and ct != '':
-                subprocess.run(
-                    ["python", ins + "_" + ct + ".py", filepath, str(row_count_1), ins, ct, subject, l_time, hid,
-                     mail_id])
-                with mysql.connector.connect(**conn_data) as con:
-                    cur = con.cursor()
-                    q = f"update {hosp} set completed = 'DDD' where id=%s"
-                    cur.execute(q, (mail_id,))
-                    con.commit()
-        pass
-
+            try:
+                row_count_1 = 1
+                filepath = row['attach_path']
+                temp = get_pdf_ins_process(filepath)
+                ins, ct = temp['insurer'], temp['process']
+                subject, l_time, hid, mail_id = row['subject'], row['date'], hosp, row['id']
+                subject = subject + '_' + mail_id
+                if '_' in hid:
+                    hid = hid.split('_')[0]
+                if ins != '' and ct != '':
+                    subprocess.run(
+                        ["python", ins + "_" + ct + ".py", filepath, str(row_count_1), ins, ct, subject, l_time, hid,
+                         mail_id])
+                    with mysql.connector.connect(**conn_data) as con:
+                        cur = con.cursor()
+                        q = f"update {hosp} set completed = 'DDD' where id=%s"
+                        cur.execute(q, (mail_id,))
+                        con.commit()
+            except:
+                log_exceptions(row=row)
 if __name__ == '__main__':
     #get p flag mails
     #process

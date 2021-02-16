@@ -53,6 +53,7 @@ from update_detail_api import get_update_log
 from custom_app import check_if_sub_and_ltime_exist, get_fp_seq
 from custom_parallel import conn_data
 from sms_alerts import send_sms
+from process_p_flag import process_p_flag_mails
 
 import threading
 
@@ -2743,6 +2744,8 @@ print("Scheduler is called.")
 sched = BackgroundScheduler(daemon=False)
 sched.add_job(add1, 'interval', seconds=10, max_instances=1)
 sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
+sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
+sched.add_job(process_p_flag_mails, 'interval', seconds=300, max_instances=1)
 sched.start()
 ###
 
