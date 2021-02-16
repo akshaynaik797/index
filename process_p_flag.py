@@ -68,6 +68,7 @@ def get_pdf_ins_process(current_pdf_file):
     return d
 
 def process_p_flag_mails():
+    print('process_p_flag_mails')
     mails_dict = {}
     fields = ("id","subject","date","sys_time","attach_path","completed","sender","sno","folder","process")
     with mysql.connector.connect(**conn_data) as con:
@@ -108,11 +109,6 @@ def process_p_flag_mails():
                         con.commit()
             except:
                 log_exceptions(row=row)
+
 if __name__ == '__main__':
-    #get p flag mails
-    #process
-    #subject as subject+id
-    #save in updation
-    #change flag to X
     process_p_flag_mails()
-    pass

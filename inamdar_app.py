@@ -51,6 +51,7 @@ from update_detail_api import get_update_log
 from custom_app import check_if_sub_and_ltime_exist, get_fp_seq
 from custom_parallel import conn_data
 from sms_alerts import send_sms
+from process_p_flag import process_p_flag_mails
 
 import threading
 
@@ -2445,6 +2446,7 @@ formparameter = dict()
 formparameter['interval'] = interval
 formparameter['nowtime'] = ''
 sched = BackgroundScheduler(daemon=False)
+sched.add_job(process_p_flag_mails, 'interval', seconds=300, max_instances=1)
 sched.add_job(inamdar, 'interval', seconds=int(formparameter['interval']), args=[formparameter], max_instances=1)
 sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
               max_instances=1)

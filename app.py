@@ -53,7 +53,6 @@ from update_detail_api import get_update_log
 from custom_app import check_if_sub_and_ltime_exist, get_fp_seq
 from custom_parallel import conn_data
 from sms_alerts import send_sms
-from process_p_flag import process_p_flag_mails
 
 import threading
 
@@ -2048,10 +2047,11 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
         if ct == 'settlement':
           try:
               with mysql.connector.connect(**conn_data) as con:
-                cur = con.cursor()
-                b = f"update graphApi set completed='S' where id=%s"
-                cur.execute(b, (mail_id))
-                con.commit()
+                  cur = con.cursor()
+                  q1 = f"update graphApi set completed = 'S' where date = %s and subject=%s;"
+                  data = (l_time, subject)
+                  cur.execute(q1, data)
+                  con.commit()
           except:
             log_exceptions()
           # start_date = datetime.date.today().strftime("%d-%b-%Y")
@@ -2744,8 +2744,6 @@ print("Scheduler is called.")
 sched = BackgroundScheduler(daemon=False)
 sched.add_job(add1, 'interval', seconds=10, max_instances=1)
 sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
-sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
-sched.add_job(process_p_flag_mails, 'interval', seconds=300, max_instances=1)
 sched.start()
 ###
 
