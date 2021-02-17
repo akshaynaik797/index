@@ -50,7 +50,7 @@ from make_log import log_exceptions, log_data, custom_log_data
 from cust_time_functs import ifutc_to_indian, time_fun_two
 from city_api import get_from_db
 from update_detail_api import get_update_log
-from custom_app import check_if_sub_and_ltime_exist, get_fp_seq
+from custom_app import check_if_sub_and_ltime_exist, get_fp_seq, create_settlement_folder
 from custom_parallel import conn_data
 from sms_alerts import send_sms
 
@@ -179,7 +179,7 @@ def check_date():
     with mysql.connector.connect(**conn_data) as con:
         for temp, i in record_dict.items():
             cur = con.cursor()
-            q = f"select subject, date, completed, attach_path, sno from {i['table_name']} where completed not in ('p', 'X', '', 'S', 'DD') and sno > %s"
+            q = f"select subject, date, completed, attach_path, sno from {i['table_name']} where completed not in ('p', 'X', '', 'S', 'DD', 'DDD') and sno > %s"
             cur.execute(q, (i['sno'],))
             result = cur.fetchall()
             for j in result:
@@ -2045,6 +2045,9 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
       #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
       try:
         if ct == 'settlement':
+          with open('logs/letters.log', 'a') as tfp:
+            print(hid, ins, date, filepath, sep=',', file=tfp)
+          create_settlement_folder(hid, ins, date, filepath)
           try:
               with mysql.connector.connect(**conn_data) as con:
                   cur = con.cursor()
@@ -2054,24 +2057,6 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
                   con.commit()
           except:
             log_exceptions()
-          # start_date = datetime.date.today().strftime("%d-%b-%Y")
-          # end_date = datetime.date.today().strftime("%d-%b-%Y")
-          # uid = mail.latest_email_id.decode()
-          #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
-          # now = datetime.datetime.now()
-          #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-          #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-          #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-          #subprocess.run(["python", "updation.py", "2", "max", "17", sender])
-          # if ins == 'star':
-          #   if 'Intimation' in subject:
-          #     subprocess.run(["python", "main.py", " ", " ", "big", hid, uid, subject])
-          #
-          #   else:
-          #     subprocess.run(["python", "main.py", ' ', ' ', "small", hid, uid, subject])
-          #
-          # else:
-          #   subprocess.run(["python", "main.py", start_date, end_date, ins, hid, uid, subject])
         else:
           ins_file = ins + "_" + ct + ".py"
           if not os.path.exists(ins_file):

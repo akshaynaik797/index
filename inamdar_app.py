@@ -48,7 +48,7 @@ from make_log import log_exceptions, log_data, custom_log_data
 from cust_time_functs import ifutc_to_indian, time_fun_two
 from city_api import get_from_db
 from update_detail_api import get_update_log
-from custom_app import check_if_sub_and_ltime_exist, get_fp_seq
+from custom_app import check_if_sub_and_ltime_exist, get_fp_seq, create_settlement_folder
 from custom_parallel import conn_data
 from sms_alerts import send_sms
 from process_p_flag import process_p_flag_mails
@@ -1747,7 +1747,10 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
         if (dol == 1):
             # subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
             try:
-                if (ct == 'settlement'):
+                if ct == 'settlement':
+                    with open('logs/letters.log', 'a') as tfp:
+                        print(hid, ins, date, filepath, sep=',', file=tfp)
+                    create_settlement_folder(hid, ins, date, filepath)
                     try:
                         with mysql.connector.connect(**conn_data) as con:
                             cur = con.cursor()

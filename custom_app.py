@@ -1,6 +1,9 @@
+from pathlib import Path
+from shutil import copyfile
+
 import mysql.connector
 import os
-
+from datetime import datetime
 from custom_parallel import conn_data
 from make_log import log_exceptions
 
@@ -62,6 +65,16 @@ def set_flag_graphapi(subject, l_time, flag, hospital):
                 con.commit()
     except:
         log_exceptions(data1=data1)
+
+def create_settlement_folder(hosp, ins, date, filepath):
+    try:
+        date = datetime.strptime(date, '%d/%m/%Y %H:%M:%S').strftime('%m%d%Y%H%M%S')
+        folder = os.path.join(hosp, "letters", f"{ins}_{date}")
+        dst = os.path.join(folder, os.path.split(filepath)[-1])
+        Path(folder).mkdir(parents=True, exist_ok=True)
+        copyfile(filepath, dst)
+    except:
+        log_exceptions(hosp=hosp, ins=ins, date=date, filepath=filepath)
 
 if __name__ == "__main__":
     set_flag_graphapi('Welcome', '19/12/2020 13:17:22', 'sample')
