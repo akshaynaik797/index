@@ -1,5 +1,6 @@
 import re
 import subprocess
+from datetime import datetime
 
 import mysql.connector
 import pandas as pd
@@ -76,12 +77,21 @@ def process_p_flag_mails():
         q = "select table_name, batch_size, sno from p_flag_process_tables where active=1"
         cur.execute(q)
         result = cur.fetchall()
+        try:
+            with open('logs/process_p_flag_mails.log', 'a') as tfp:
+                print(str(datetime.now()), cur.statement, str(result), sep=',', file=tfp)
+        except:
+            pass
         for table, batch, sno in result:
-            q = f"select * from {table} where completed='p' and sno > {sno} order by sno desc limit {batch}"
+            q = f"select * from {table} where completed='p' and order by sno desc limit {batch}"
             cur.execute(q)
             records = []
             result1 = cur.fetchall()
+            with open('logs/process_p_flag_mails.log', 'a') as tfp:
+                print(str(datetime.now()), table, batch, sno, sep=',', file=tfp)
             for i in result1:
+                with open('logs/process_p_flag_mails.log', 'a') as tfp:
+                    print(str(datetime.now()), str(i), sep=',', file=tfp)
                 t = {}
                 for k, v in zip(fields, i):
                     t[k] = v
@@ -107,6 +117,11 @@ def process_p_flag_mails():
                         q = f"update {hosp} set completed = 'DDD' where id=%s"
                         cur.execute(q, (mail_id,))
                         con.commit()
+                        try:
+                            with open('logs/process_p_flag_mails.log', 'a') as tfp:
+                                print(str(datetime.now()), cur.statement, str(result), sep=',', file=tfp)
+                        except:
+                            pass
             except:
                 log_exceptions(row=row)
 
