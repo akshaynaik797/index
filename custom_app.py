@@ -69,7 +69,8 @@ def set_flag_graphapi(subject, l_time, flag, hospital):
 def create_settlement_folder(hosp, ins, date, filepath):
     try:
         date = datetime.strptime(date, '%d/%m/%Y %H:%M:%S').strftime('%m%d%Y%H%M%S')
-        folder = os.path.join(hosp, "letters", f"{ins}_{date}")
+        today = datetime.now().strftime("%d_%m_%Y")
+        folder = os.path.join(today, hosp, "letters", f"{ins}_{date}")
         dst = os.path.join(folder, os.path.split(filepath)[-1])
         Path(folder).mkdir(parents=True, exist_ok=True)
         copyfile(filepath, dst)
