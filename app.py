@@ -2047,6 +2047,10 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
         if ct == 'settlement':
           with open('logs/letters.log', 'a') as tfp:
             print(hid, ins, date, filepath, sep=',', file=tfp)
+          if 'Intimation No' in subject:
+            ins = 'big'
+          if 'STAR HEALTH AND ALLIED INSUR04239' in subject:
+            ins = 'small'
           create_settlement_folder(hid, ins, l_time, filepath)
           try:
               with mysql.connector.connect(**conn_data) as con:
