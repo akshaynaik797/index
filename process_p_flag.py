@@ -83,8 +83,8 @@ def process_p_flag_mails():
         except:
             pass
         for table, batch, sno in result:
-            q = f"select * from {table} where completed='p' and order by sno desc limit {batch}"
-            cur.execute(q)
+            q1 = f"select * from {table} where completed='p' and sno <= %s order by sno limit {batch}"
+            cur.execute(q1, (sno,))
             records = []
             result1 = cur.fetchall()
             with open('logs/process_p_flag_mails.log', 'a') as tfp:
