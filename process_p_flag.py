@@ -9,9 +9,14 @@ import pdftotext
 from custom_parallel import conn_data
 from make_log import log_exceptions
 
+tconn_data = {'host': "iclaimdev.caq5osti8c47.ap-south-1.rds.amazonaws.com",
+             'user': "admin",
+             'password': "Welcome1!",
+             'database': 'portals'}
+
 def param():
-    with mysql.connector.connect(**conn_data) as con:
-        df = pd.read_sql_query("SELECT * from pdf_lables", con)
+    with mysql.connector.connect(**tconn_data) as con:
+        df = pd.read_sql_query("SELECT * from paraClassification", con)
         return df
 
 def get_pdf_ins_process(current_pdf_file):
@@ -50,26 +55,26 @@ def get_pdf_ins_process(current_pdf_file):
     #                     if len(j) > 0:
     #                         if str(j) in res:
     #                             p2 = j
-    try:
-        l2 = (json_data['process_pdf'].str.contains(p2))
-    except:
-        p2 = 'not defined'
-        l2 = (json_data['process_pdf'].str.contains(p2))
-    try:
-        l1 = (json_data['ins_pdf'].str.contains(p1))
-    except:
-        p1 = 'not defined'
-        l1 = (json_data['ins_pdf'].str.contains(p1))
-
-    locate = json_data[l2 & l1]['process']
-    p2 = locate.to_string(index=False)
-    if '\n' in p2:
-        p2 = p2.split('\n')[0]
-    if p2 == 'Series([], )':
-        p2 = 'not defined'
-    with mysql.connector.connect(**conn_data) as con:
+    # try:
+    #     l2 = (json_data['process_pdf'].str.contains(p2))
+    # except:
+    #     p2 = 'not defined'
+    #     l2 = (json_data['process_pdf'].str.contains(p2))
+    # try:
+    #     l1 = (json_data['ins_pdf'].str.contains(p1))
+    # except:
+    #     p1 = 'not defined'
+    #     l1 = (json_data['ins_pdf'].str.contains(p1))
+    #
+    # locate = json_data[l2 & l1]['process']
+    # p2 = locate.to_string(index=False)
+    # if '\n' in p2:
+    #     p2 = p2.split('\n')[0]
+    # if p2 == 'Series([], )':
+    #     p2 = 'not defined'
+    with mysql.connector.connect(**tconn_data) as con:
         cur = con.cursor()
-        q = "select ins, process from pdf_lables where ins_pdf=%s and process=%s limit 1"
+        q = "select ins, process from paraClassification where ins_pdf=%s and process_pdf=%s limit 1"
         cur.execute(q, (p1, p2))
         result = cur.fetchone()
         if result is not None:
@@ -124,19 +129,19 @@ def process_p_flag_mails():
                 if '_' in hid:
                     hid = hid.split('_')[0]
                 if ins != '' and ct != '':
+                    with open('logs/process_p_flag_mails.log', 'a') as tfp:
+                        print(str(datetime.now()), ins, ct, sep=',', file=tfp)
+                    flag = 'DDD'
+                    with mysql.connector.connect(**conn_data) as con:
+                        cur = con.cursor()
+                        q = f"update {hosp} set completed=%s where id=%s"
+                        cur.execute(q, (flag, mail_id,))
+                        con.commit()
+                        with open('logs/process_p_flag_mails.log', 'a') as tfp:
+                            print(str(datetime.now()), cur.statement, sep=',', file=tfp)
                     subprocess.run(
                         ["python", ins + "_" + ct + ".py", filepath, str(row_count_1), ins, ct, subject, l_time, hid,
                          mail_id])
-                    with mysql.connector.connect(**conn_data) as con:
-                        cur = con.cursor()
-                        q = f"update {hosp} set completed = 'DDD' where id=%s"
-                        cur.execute(q, (mail_id,))
-                        con.commit()
-                        try:
-                            with open('logs/process_p_flag_mails.log', 'a') as tfp:
-                                print(str(datetime.now()), cur.statement, str(result), sep=',', file=tfp)
-                        except:
-                            pass
             except:
                 log_exceptions(row=row)
 
