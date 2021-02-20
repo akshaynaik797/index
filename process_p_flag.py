@@ -4,7 +4,7 @@ from datetime import datetime
 
 import mysql.connector
 import pandas as pd
-import pdfplumber
+import pdftotext
 
 from custom_parallel import conn_data
 from make_log import log_exceptions
@@ -24,22 +24,32 @@ def get_pdf_ins_process(current_pdf_file):
     Insurance_company_label_1 = json_data['ins_pdf']
     Process_label_2 = json_data['process_pdf']
     p1, p2 = "", ""
-    with pdfplumber.open(current_pdf_file) as my_pdf:
-        pages = my_pdf.pages
-        res1 = []
-        for i, pg in enumerate(pages):
-            tbl = [pages[i].extract_text()]
-            test = [tbl[0]]
-            for sub in test:
-                res1.append(re.sub('\n', ' ', sub))
-            res = ' '.join(res1)
-            for i, j in zip(Insurance_company_label_1, Process_label_2):
-                if len(i) > 0:
-                    if str(i) in res:
-                        p1 = i
-                        if len(j) > 0:
-                            if str(j) in res:
-                                p2 = j
+    with open(current_pdf_file, "rb") as f:
+        pdf = pdftotext.PDF(f)
+        res = " ".join(pdf)
+        for i, j in zip(Insurance_company_label_1, Process_label_2):
+            if len(i) > 0:
+                if str(i) in res:
+                    p1 = i
+                    if len(j) > 0:
+                        if str(j) in res:
+                            p2 = j
+    # with pdfplumber.open(current_pdf_file) as my_pdf:
+    #     pages = my_pdf.pages
+    #     res1 = []
+    #     for i, pg in enumerate(pages):
+    #         tbl = [pages[i].extract_text()]
+    #         test = [tbl[0]]
+    #         for sub in test:
+    #             res1.append(re.sub('\n', ' ', sub))
+    #         res = ' '.join(res1)
+    #         for i, j in zip(Insurance_company_label_1, Process_label_2):
+    #             if len(i) > 0:
+    #                 if str(i) in res:
+    #                     p1 = i
+    #                     if len(j) > 0:
+    #                         if str(j) in res:
+    #                             p2 = j
     try:
         l2 = (json_data['process_pdf'].str.contains(p2))
     except:
@@ -83,7 +93,7 @@ def process_p_flag_mails():
         except:
             pass
         for table, batch, sno in result:
-            q1 = f"select * from {table} where completed='p' and sno <= %s order by sno limit {batch}"
+            q1 = f"select * from {table} where completed='p' and sno > %s order by sno limit {batch}"
             cur.execute(q1, (sno,))
             records = []
             result1 = cur.fetchall()
@@ -100,6 +110,11 @@ def process_p_flag_mails():
     for hosp in mails_dict:
         for row in mails_dict[hosp]:
             try:
+                with mysql.connector.connect(**conn_data) as con:
+                    cur = con.cursor()
+                    q = f"update {hosp} set completed='pp' where sno=%s"
+                    cur.execute(q, (row['sno'],))
+                    con.commit()
                 row_count_1 = 1
                 filepath = row['attach_path']
                 temp = get_pdf_ins_process(filepath)

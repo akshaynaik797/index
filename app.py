@@ -179,7 +179,7 @@ def check_date():
     with mysql.connector.connect(**conn_data) as con:
         for temp, i in record_dict.items():
             cur = con.cursor()
-            q = f"select subject, date, completed, attach_path, sno from {i['table_name']} where completed not in ('p', 'X', '', 'S', 'DD', 'DDD') and sno > %s"
+            q = f"select subject, date, completed, attach_path, sno from {i['table_name']} where completed not in ('p', 'X', '', 'S', 'DD', 'DDD', 'pp') and sno > %s"
             cur.execute(q, (i['sno'],))
             result = cur.fetchall()
             for j in result:
