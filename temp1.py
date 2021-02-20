@@ -1,15 +1,17 @@
-import psycopg2
+import subprocess
 
-def write(x):
-    value, time = x[0], x[1]
-    print(f"job running is {x[0]}")
-    conn = psycopg2.connect(database="temp", user="akshay", password="41424344", host="127.0.0.1", port="5432")
-    cur = conn.cursor()
-    q = f"begin;" \
-        f"insert into jobs (jobid, data) values ('{x[0]}', '{x[1]}');select pg_sleep('{x[1]}');" \
-        f"commit;"
-    # f"insert into jobs (jobid, data) values ('{x[0]}', '{x[1]}');select pg_sleep('{x[1]}');" \
-    cur.execute(q)
-if __name__ == "__main__":
-    x = (1, 10)
-    write(x)
+
+def run():
+    ins = "tata"
+    ct = "General"
+    fpath = "/home/akshay/temp/6888_2021021300048.pdf"
+    subject = "Claim Query Letter- MemberID:-N90A0175TODAY	Claim No:-90222021477211"
+    l_time = "07/12/2020 18:22:25"
+    hid = "test"
+    mail_id = 'asdasdasda'
+    subprocess.run(
+              ["python", ins + "_" + ct + ".py", fpath, str(999999), ins,
+               ct, subject, l_time, hid, mail_id])
+
+if __name__ == '__main__':
+    run()

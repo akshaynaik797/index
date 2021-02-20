@@ -88,7 +88,7 @@ try:
                         datadict[i] = temp
                         break
             datadict[i] = ""
-    datadict['status'] = status
+    sys.argv[4] = sys.argv[4] + ',' + status
 
     data = [i for i in sys.argv[1:]]
     data2 = [datadict[i] for i in datadict]
