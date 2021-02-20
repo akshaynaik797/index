@@ -92,7 +92,6 @@ def process_p_flag_mails():
                 temp = get_pdf_ins_process(filepath)
                 ins, ct = temp['insurer'], temp['process']
                 subject, l_time, hid, mail_id = row['subject'], row['date'], hosp, row['id']
-                subject = subject + '_' + mail_id
                 if '_' in hid:
                     hid = hid.split('_')[0]
                 if ins != '' and ct != '':
