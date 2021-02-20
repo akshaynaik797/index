@@ -39,39 +39,6 @@ def get_pdf_ins_process(current_pdf_file):
                     if len(j) > 0:
                         if str(j) in res:
                             p2 = j
-    # with pdfplumber.open(current_pdf_file) as my_pdf:
-    #     pages = my_pdf.pages
-    #     res1 = []
-    #     for i, pg in enumerate(pages):
-    #         tbl = [pages[i].extract_text()]
-    #         test = [tbl[0]]
-    #         for sub in test:
-    #             res1.append(re.sub('\n', ' ', sub))
-    #         res = ' '.join(res1)
-    #         for i, j in zip(Insurance_company_label_1, Process_label_2):
-    #             if len(i) > 0:
-    #                 if str(i) in res:
-    #                     p1 = i
-    #                     if len(j) > 0:
-    #                         if str(j) in res:
-    #                             p2 = j
-    # try:
-    #     l2 = (json_data['process_pdf'].str.contains(p2))
-    # except:
-    #     p2 = 'not defined'
-    #     l2 = (json_data['process_pdf'].str.contains(p2))
-    # try:
-    #     l1 = (json_data['ins_pdf'].str.contains(p1))
-    # except:
-    #     p1 = 'not defined'
-    #     l1 = (json_data['ins_pdf'].str.contains(p1))
-    #
-    # locate = json_data[l2 & l1]['process']
-    # p2 = locate.to_string(index=False)
-    # if '\n' in p2:
-    #     p2 = p2.split('\n')[0]
-    # if p2 == 'Series([], )':
-    #     p2 = 'not defined'
     with mysql.connector.connect(**tconn_data) as con:
         cur = con.cursor()
         q = "select ins, process from paraClassification where ins_pdf=%s and process_pdf=%s limit 1"
@@ -142,6 +109,13 @@ def process_p_flag_mails():
                     subprocess.run(
                         ["python", ins + "_" + ct + ".py", filepath, str(row_count_1), ins, ct, subject, l_time, hid,
                          mail_id])
+                    with mysql.connector.connect(**conn_data) as con:
+                        cur = con.cursor()
+                        q = f"update {hosp} set process='classification' where id=%s"
+                        cur.execute(q, (mail_id,))
+                        con.commit()
+                        with open('logs/process_p_flag_mails.log', 'a') as tfp:
+                            print(str(datetime.now()), cur.statement, sep=',', file=tfp)
             except:
                 log_exceptions(row=row)
 
