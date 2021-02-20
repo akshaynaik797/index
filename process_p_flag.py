@@ -9,6 +9,17 @@ import pdftotext
 from custom_parallel import conn_data
 from make_log import log_exceptions
 
+hosp_dict = {
+            'graphApi': 'Max PPT',
+            'inamdar_mails': 'inamdar',
+            'noble_mails': 'noble',
+            'ils_mails': 'ils',
+            'ils_howrah_mails': 'ils_howrah',
+            'ils_agartala_mails': 'ils_agartala',
+            'ils_dumdum_mails': 'ils_dumdum'
+        }
+
+
 tconn_data = {'host': "iclaimdev.caq5osti8c47.ap-south-1.rds.amazonaws.com",
              'user': "admin",
              'password': "Welcome1!",
@@ -92,8 +103,7 @@ def process_p_flag_mails():
                 temp = get_pdf_ins_process(filepath)
                 ins, ct = temp['insurer'], temp['process']
                 subject, l_time, hid, mail_id = row['subject'], row['date'], hosp, row['id']
-                if '_' in hid:
-                    hid = hid.split('_')[0]
+                hid = hosp_dict[hosp]
                 if ins != '' and ct != '':
                     with open('logs/process_p_flag_mails.log', 'a') as tfp:
                         print(str(datetime.now()), ins, ct, sep=',', file=tfp)
