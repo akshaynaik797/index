@@ -67,6 +67,7 @@ def set_flag_graphapi(subject, l_time, flag, hospital):
         log_exceptions(data1=data1)
 
 def create_settlement_folder(hosp, ins, date, filepath):
+    dst = ""
     try:
         date = datetime.strptime(date, '%d/%m/%Y %H:%M:%S').strftime('%m%d%Y%H%M%S')
         today = datetime.now().strftime("%d_%m_%Y")
@@ -76,6 +77,7 @@ def create_settlement_folder(hosp, ins, date, filepath):
         copyfile(filepath, dst)
     except:
         log_exceptions(hosp=hosp, ins=ins, date=date, filepath=filepath)
+    return os.path.abspath(dst)
 
 if __name__ == "__main__":
     set_flag_graphapi('Welcome', '19/12/2020 13:17:22', 'sample')

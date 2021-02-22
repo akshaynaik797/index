@@ -2,6 +2,8 @@ import mysql.connector
 import sys
 import re
 import datetime
+
+import pdftotext
 from dateutil import parser as date_parser
 
 from custom_datadict import make_datadict
@@ -11,17 +13,20 @@ from custom_app import set_flag_graphapi
 from make_log import log_exceptions
 
 try:
-
     set_flag_graphapi(sys.argv[5], sys.argv[6], 'E',sys.argv[7])
-
+    with open(sys.argv[1], "rb") as f:
+        pdf = pdftotext.PDF(f)
+    with open('city/output.txt', 'w') as f:
+        f.write(" ".join(pdf))
+    with open('city/output.txt', 'r') as myfile:
+        f = myfile.read()
 
     start = now = datetime.datetime.now()
-    f = ''
-    try:
-        f = mail_body_to_text(sys.argv[5], sys.argv[7])
-    except Exception as e:
-        log_exceptions()
-        pass
+    # try:
+    #     f = mail_body_to_text(sys.argv[5], sys.argv[7])
+    # except Exception as e:
+    #     log_exceptions()
+    #     pass
     badchars = ('/',)
     if f != '':
         datadict = {}
@@ -73,7 +78,7 @@ try:
                 datadict['nia_transaction_reference'])
         with mysql.connector.connect(**conn_data) as con:
             cur = con.cursor()
-            sql = "insert into City_Records values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            sql = "insert into City_Records (`Advice_No`,`Insurer_name`,`City_Transaction_Reference`,`Payer_Reference_No`,`Payment_Amount`,`Processing_Date`,`City_Claim_No`,`City_Patient_name`,`City_Admission_Date`,`City_TPA`,`Payment_Details`,`NIA_Transaction_Reference`, `hospital`) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
             cur.execute(sql, data)
             con.commit()
         datadict = make_datadict(f)

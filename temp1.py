@@ -2,12 +2,12 @@ import subprocess
 
 
 def run():
-    ins = "tata"
-    ct = "General"
-    fpath = "/home/akshay/temp/6888_2021021300048.pdf"
-    subject = "Claim Query Letter- MemberID:-N90A0175TODAY	Claim No:-90222021477211"
+    ins = "newindia"
+    ct = "pay"
+    fpath = "/home/akshay/temp/250.pdf"
+    subject = "The New India Assurance Co. Ltd. - Health Insurance claim payment has been initiated"
     l_time = "07/12/2020 18:22:25"
-    hid = "test"
+    hid = "noble"
     mail_id = 'asdasdasda'
     subprocess.run(
               ["python", ins + "_" + ct + ".py", fpath, str(999999), ins,

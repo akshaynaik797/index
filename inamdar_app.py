@@ -1754,13 +1754,16 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
                         ins = 'big'
                     if 'STAR HEALTH AND ALLIED INSUR04239' in subject:
                         ins = 'small'
-                    create_settlement_folder(hid, ins, l_time, filepath)
+                    filepath = create_settlement_folder(hid, ins, l_time, filepath)
                     try:
                         with mysql.connector.connect(**conn_data) as con:
                             cur = con.cursor()
+                            q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                            data = (mail_id, subject, l_time, str(datetime.datetime.now()), filepath, '', sender, hid)
+                            cur.execute(q, data)
                             q1 = f"update {hid}_mails set completed = 'S' where date = %s and subject=%s;"
-                            data = (l_time, subject)
-                            cur.execute(q1, data)
+                            data1 = (l_time, subject)
+                            cur.execute(q1, data1)
                             con.commit()
                     except:
                       log_exceptions()
