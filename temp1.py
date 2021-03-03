@@ -4,7 +4,7 @@ import subprocess
 def run():
     ins = "newindia"
     ct = "pay"
-    fpath = "/home/akshay/temp/250.pdf"
+    fpath = "/home/akshay/Downloads/PAYMENT_DETAIL_1000002023059200953.pdf"
     subject = "The New India Assurance Co. Ltd. - Health Insurance claim payment has been initiated"
     l_time = "07/12/2020 18:22:25"
     hid = "noble"

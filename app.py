@@ -50,7 +50,7 @@ from make_log import log_exceptions, log_data, custom_log_data
 from cust_time_functs import ifutc_to_indian, time_fun_two
 from city_api import get_from_db
 from update_detail_api import get_update_log
-from custom_app import check_if_sub_and_ltime_exist, get_fp_seq, create_settlement_folder
+from custom_app import check_if_sub_and_ltime_exist, get_fp_seq, create_settlement_folder, get_ins_process
 from custom_parallel import conn_data
 from sms_alerts import send_sms
 
@@ -179,14 +179,14 @@ def check_date():
     with mysql.connector.connect(**conn_data) as con:
         for temp, i in record_dict.items():
             cur = con.cursor()
-            q = f"select subject, date, completed, attach_path, sno from {i['table_name']} where completed not in ('p', 'X', '', 'S', 'DD', 'DDD', 'pp') and sno > %s"
+            q = f"select subject, date, completed, attach_path, sno, sender from {i['table_name']} where completed not in ('p', 'X', '', 'S', 'DDD', 'pp') and sno > %s"
             cur.execute(q, (i['sno'],))
             result = cur.fetchall()
             for j in result:
                 j = list(j)
                 j.append(i['hospital'])
                 j = tuple(j)
-                q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `hospital`) VALUES (%s, %s, %s, %s, %s, %s)"
+                q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `sender`, `hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s)"
                 cur = con.cursor()
                 cur.execute(q, j)
                 send_sms_text('9967044874', f"{j[0]}|||{j[1]}|||{j[2]}|||{i['hospital']}")
@@ -291,6 +291,48 @@ def set_flag():
             con.commit()
             return jsonify('done')
     return jsonify('record not found')
+
+@app.route("/setsettlementflag", methods=["POST"])
+def set_settlement_flag():
+    data, records = request.form.to_dict(), []
+    fields = ('subject', 'date', 'flag', 'hospital')
+    for i in fields:
+        if i not in data:
+            return jsonify(f"{i} parameter required")
+    with mysql.connector.connect(**conn_data) as con:
+        cur = con.cursor()
+        q = "select table_name, hospital_name from mail_storage_tables where is_active='1'"
+        cur.execute(q)
+        table_list = cur.fetchall()
+    for i, j in table_list:
+        if j == data['hospital']:
+            table = i
+            break
+    q = f"select * from {table} where subject=%s and date=%s"
+    with mysql.connector.connect(**conn_data) as con:
+        cur = con.cursor()
+        cur.execute(q, (data['subject'], data['date'] ))
+        record = cur.fetchone()
+        if record is not None:
+            ins, proc = get_ins_process(record[3], record[8])
+            filepath = create_settlement_folder(data['hospital'], ins, record[4], record[6])
+            try:
+                q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                data1 = (record[0], record[3], record[4], str(datetime.datetime.now()), filepath, '', record[8], data['hospital'])
+                cur.execute(q, data1)
+                q1 = f"update graphApi set completed = 'S' where date = %s and subject=%s;"
+                data1 = (record[4], record[3])
+                cur.execute(q1, data1)
+            except:
+                log_exceptions()
+            flag = record[0]
+            flag = flag + ',' + data['flag']
+            q = f"update {table} set completed=%s where subject=%s and date=%s"
+            cur.execute(q, (flag, data['subject'], data['date']))
+            con.commit()
+            return jsonify('done')
+    return jsonify('record not found')
+
 
 @app.route("/process_record", methods=["POST"])
 def process_record():
@@ -2046,7 +2088,7 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
       try:
         if ct == 'settlement':
           with open('logs/letters.log', 'a') as tfp:
-            print(hid, ins, date, filepath, sep=',', file=tfp)
+            print(hid, ins, l_time, filepath, sep=',', file=tfp)
           if 'Intimation No' in subject:
             ins = 'big'
           if 'STAR HEALTH AND ALLIED INSUR04239' in subject:
@@ -2058,7 +2100,7 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
                   q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                   data = (mail_id, subject, l_time, str(datetime.datetime.now()), filepath, '', sender, hid)
                   cur.execute(q, data)
-                  q1 = f"update {hid}_mails set completed = 'S' where date = %s and subject=%s;"
+                  q1 = f"update graphApi set completed = 'S' where date = %s and subject=%s;"
                   data1 = (l_time, subject)
                   cur.execute(q1, data1)
                   con.commit()
@@ -2086,25 +2128,6 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
       except Exception as e:
         send_sms(f'exception in {subject}')
         log_exceptions()
-      temp_flag = 0
-      with mysql.connector.connect(**conn_data) as con:
-        cur = con.cursor()
-        q = "select completed from graphApi where date=%s and subject=%s limit 1"
-        data = (l_time, subject)
-        cur.execute(q, data)
-        r = cur.fetchone()
-        if r:
-          flag = r[0]
-          if flag in ['E', 'D']:
-            temp_flag = 1
-      if temp_flag == 1:
-        send_sms(f'error in {subject}')
-        with mysql.connector.connect(**conn_data) as con:
-          cur = con.cursor()
-          q = "update graphApi set completed = 'FF' where date=%s and subject=%s"
-          data = (l_time, subject)
-          cur.execute(q, data)
-          con.commit()
   except:
     log_exceptions()
 
@@ -2740,7 +2763,4 @@ sched.start()
 ###
 
 if __name__ == '__main__':
-  # app.run(host="0.0.0.0")
-  app.run(host="0.0.0.0", port=9997)
-  # check_date()
-  # send_sms_text('7709698773', 'abc')
+    check_date()

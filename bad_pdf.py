@@ -29,7 +29,9 @@ def text_from_pdf(pdf_path, outfile):
         image_counter = 1
 
         # Iterate through all the pages stored above
-        pages = pages[:2] + pages[-1]
+        last = pages[-1]
+        pages = pages[:2]
+        pages.append(last)
         for page in pages:
             # Declaring filename for each page of PDF as JPG
             # For each page, filename will be:

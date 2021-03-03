@@ -3,9 +3,9 @@ import subprocess
 import mysql.connector
 from custom_parallel import conn_data
 def run():
-    ins = "MDINDIA"
-    ct = "query"
-    fpath = "/home/akshay/Downloads/z2/MDI5983457_Query_NO_1_45985.pdf"
+    ins = "star"
+    ct = "preauth"
+    fpath = "/home/akshay/temp/20210225091127_808c351e-f72a-46d9-9a4b-8c79028ba03d_Authorization_1458764.pdf"
     subject = "Claim Query Letter- MemberID:-N90A0175TODAY	Claim No:-90222021477211"
     l_time = "07/12/2020 18:22:25"
     hid = "test"

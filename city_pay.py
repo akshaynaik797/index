@@ -75,7 +75,8 @@ try:
                 datadict['adminssion_date'],
                 datadict['tpa'],
                 datadict['payment_details'],
-                datadict['nia_transaction_reference'])
+                datadict['nia_transaction_reference'],
+                sys.argv[7])
         with mysql.connector.connect(**conn_data) as con:
             cur = con.cursor()
             sql = "insert into City_Records (`Advice_No`,`Insurer_name`,`City_Transaction_Reference`,`Payer_Reference_No`,`Payment_Amount`,`Processing_Date`,`City_Claim_No`,`City_Patient_name`,`City_Admission_Date`,`City_TPA`,`Payment_Details`,`NIA_Transaction_Reference`, `hospital`) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"

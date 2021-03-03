@@ -1749,7 +1749,7 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
             try:
                 if ct == 'settlement':
                     with open('logs/letters.log', 'a') as tfp:
-                        print(hid, ins, date, filepath, sep=',', file=tfp)
+                        print(hid, ins, l_time, filepath, sep=',', file=tfp)
                     if 'Intimation No' in subject:
                         ins = 'big'
                     if 'STAR HEALTH AND ALLIED INSUR04239' in subject:
