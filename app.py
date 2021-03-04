@@ -305,10 +305,15 @@ def set_flag():
 @app.route("/setsettlementflag", methods=["POST"])
 def set_settlement_flag():
     data, records = request.form.to_dict(), []
-    fields = ('subject', 'date', 'flag', 'hospital')
+    fields = ('subject', 'date', 'flag', 'hospital', 'row_id')
     for i in fields:
         if i not in data:
             return jsonify(f"{i} parameter required")
+    with mysql.connector.connect(**conn_data) as con:
+        cur = con.cursor()
+        q = "update sms_mails set id='X' where row_id=%s"
+        cur.execute(q, (data['row_id'], ))
+        con.commit()
     with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
         q = "select table_name, hospital from mail_storage_tables where active='1'"
