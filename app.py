@@ -168,6 +168,11 @@ def check_date():
     record_dict = {}
     with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
+        q = 'select subject, email from exceptions_sms_mails'
+        cur.execute(q)
+        exception_mails = cur.fetchall()
+    with mysql.connector.connect(**conn_data) as con:
+        cur = con.cursor()
         q = 'select * from mail_storage_tables'
         cur.execute(q)
         records = cur.fetchall()
@@ -184,6 +189,11 @@ def check_date():
             result = cur.fetchall()
             for j in result:
                 j = list(j)
+                subject, sender = j[0], j[5]
+                for sub, email_id in exception_mails:
+                    if sub in subject and email_id in sender:
+                        j[2] = 'X'
+                        break
                 j.append(i['hospital'])
                 j = tuple(j)
                 q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `sender`, `hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s)"
@@ -315,12 +325,16 @@ def set_settlement_flag():
         record = cur.fetchone()
         if record is not None:
             mid, subject, date, sys_time, attach_path, completed, sender, sno, folder, process = record
-            if attach_path == '' or attach_path is None:
-                return jsonify('attachment not found')
+            # if attach_path == '' or attach_path is None:
+            #     return jsonify('attachment not found')
             ins, proc = get_ins_process(subject, sender)
             if proc != 'settlement':
                 return jsonify('wrong process '+proc)
-            filepath = create_settlement_folder(data['hospital'], ins, data, attach_path)
+            filepath = ""
+            try:
+                filepath = create_settlement_folder(data['hospital'], ins, data, attach_path)
+            except:
+                pass
             try:
                 q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                 data1 = (mid, subject, date, str(datetime.datetime.now()), filepath, '', sender, data['hospital'])
@@ -385,24 +399,25 @@ def get_id():
   return jsonify(data)
 
 
-@app.route('/mob_app_insert')
+@app.route('/mob_app_insert', methods=["POST"])
 def mob_app_insert():
-  dbpath = 'database1.db'
-  device_id = request.args['device_id']
-  token = request.args['token']
+  data = request.form.to_dict()
+  device_id = data['device_id']
+  token = data['token']
   with mysql.connector.connect(**conn_data) as con:
     cur = con.cursor()
     q = f"select * from mob_app where device_id='{device_id}'"
-    if cur.execute(q).fetchone() is not None:
+    cur.execute(q)
+    r = cur.fetchone()
+    if r is not None:
       q1 = f"update mob_app set token='{token}' where device_id='{device_id}'"
       cur.execute(q1)
       con.commit()
       return jsonify('update query successful')
-    elif cur.execute(q).fetchone() is None:
+    else:
       cur.execute(f"insert into mob_app values('{device_id}', '{token}')")
       con.commit()
       return jsonify('insert query successful')
-  return jsonify('query failed')
 
 
 @app.route('/hello')
@@ -2757,13 +2772,13 @@ def temp_fun():
     #       pass
 
 ####for test purpose
-print("Scheduler is called.")
-sched = BackgroundScheduler(daemon=False)
-sched.add_job(add1, 'interval', seconds=10, max_instances=1)
-sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
-sched.start()
+# print("Scheduler is called.")
+# sched = BackgroundScheduler(daemon=False)
+# sched.add_job(add1, 'interval', seconds=10, max_instances=1)
+# sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
+# sched.start()
 ###
 
 if __name__ == '__main__':
-    # app.run()
+    check_date()
     pass
