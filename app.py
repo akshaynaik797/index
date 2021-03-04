@@ -301,35 +301,37 @@ def set_settlement_flag():
             return jsonify(f"{i} parameter required")
     with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
-        q = "select table_name, hospital_name from mail_storage_tables where is_active='1'"
+        q = "select table_name, hospital from mail_storage_tables where active='1'"
         cur.execute(q)
         table_list = cur.fetchall()
     for i, j in table_list:
         if j == data['hospital']:
             table = i
             break
-    q = f"select * from {table} where subject=%s and date=%s"
+    q = "select * from " + table + " where subject=%s and date=%s"
     with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
         cur.execute(q, (data['subject'], data['date'] ))
         record = cur.fetchone()
         if record is not None:
-            ins, proc = get_ins_process(record[3], record[8])
-            filepath = create_settlement_folder(data['hospital'], ins, record[4], record[6])
+            mid, subject, date, sys_time, attach_path, completed, sender, sno, folder, process = record
+            if attach_path == '' or attach_path is None:
+                return jsonify('attachment not found')
+            ins, proc = get_ins_process(subject, sender)
+            if proc != 'settlement':
+                return jsonify('wrong process '+proc)
+            filepath = create_settlement_folder(data['hospital'], ins, data, attach_path)
             try:
                 q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                data1 = (record[0], record[3], record[4], str(datetime.datetime.now()), filepath, '', record[8], data['hospital'])
+                data1 = (mid, subject, date, str(datetime.datetime.now()), filepath, '', sender, data['hospital'])
                 cur.execute(q, data1)
-                q1 = f"update graphApi set completed = 'S' where date = %s and subject=%s;"
-                data1 = (record[4], record[3])
+                q1 = "update " + table + " set completed = 'S' where date = %s and subject=%s;"
+                data1 = (date, subject)
                 cur.execute(q1, data1)
+                con.commit()
             except:
                 log_exceptions()
-            flag = record[0]
-            flag = flag + ',' + data['flag']
-            q = f"update {table} set completed=%s where subject=%s and date=%s"
-            cur.execute(q, (flag, data['subject'], data['date']))
-            con.commit()
+                return jsonify('error')
             return jsonify('done')
     return jsonify('record not found')
 
@@ -2763,4 +2765,5 @@ sched.start()
 ###
 
 if __name__ == '__main__':
-    check_date()
+    # app.run()
+    pass
