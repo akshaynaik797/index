@@ -168,11 +168,6 @@ def check_date():
     record_dict = {}
     with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
-        q = 'select subject, email from exceptions_sms_mails'
-        cur.execute(q)
-        exception_mails = cur.fetchall()
-    with mysql.connector.connect(**conn_data) as con:
-        cur = con.cursor()
         q = 'select * from mail_storage_tables'
         cur.execute(q)
         records = cur.fetchall()
@@ -181,26 +176,6 @@ def check_date():
         for key, value in zip(fields, i):
             temp[key] = value
         record_dict[temp['table_name']] = temp
-    with mysql.connector.connect(**conn_data) as con:
-        for temp, i in record_dict.items():
-            cur = con.cursor()
-            q = f"select subject, date, completed, attach_path, sno, sender from {i['table_name']} where completed not in ('p', 'X', '', 'S', 'DDD', 'pp') and sno > %s"
-            cur.execute(q, (i['sno'],))
-            result = cur.fetchall()
-            for j in result:
-                j = list(j)
-                subject, sender = j[0], j[5]
-                for sub, email_id in exception_mails:
-                    if sub in subject and email_id in sender:
-                        j[2] = 'X'
-                        break
-                j.append(i['hospital'])
-                j = tuple(j)
-                q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `sender`, `hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                cur = con.cursor()
-                cur.execute(q, j)
-                send_sms_text('9967044874', f"{j[0]}|||{j[1]}|||{j[2]}|||{i['hospital']}")
-        con.commit()
     with mysql.connector.connect(**conn_data) as con:
         for i in record_dict:
             table_name = record_dict[i]['table_name']
@@ -221,6 +196,39 @@ def check_date():
                 q = f"update mail_storage_tables set flag=%s, id=%s, subject=%s, date=%s, sno=%s where table_name=%s"
                 cur.execute(q, (flag, mid, subject, date, sno, table_name))
         con.commit()
+
+def insert_sms_mails():
+    last_rows = 50
+    with mysql.connector.connect(**conn_data) as con:
+        cur = con.cursor()
+        q = 'select subject, email from exceptions_sms_mails'
+        cur.execute(q)
+        exception_mails = cur.fetchall()
+        q = 'select table_name, hospital from mail_storage_tables where active=1'
+        cur.execute(q)
+        result = cur.fetchall()
+        for table, hosp in result:
+            q = f"select subject, date, completed, attach_path, sno, sender from {table} where completed not in ('p', 'X', '', 'S', 'pp') order by sno desc limit {last_rows}"
+            cur.execute(q)
+            r1 = cur.fetchall()
+            for j in r1:
+                j = list(j)
+                subject, sender = j[0], j[5]
+                for sub, email_id in exception_mails:
+                    if sub in subject and email_id in sender:
+                        j[2] = 'X'
+                        break
+                j.append(hosp)
+                j.append(str(datetime.datetime.now()))
+                j = tuple(j)
+                q = "select * from sms_mails where subject=%s and date=%s and sno=%s limit 1"
+                data = (j[0], j[1], j[4])
+                cur.execute(q, data)
+                r2 = cur.fetchone()
+                if r2 is None:
+                    q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `sender`, `hospital`, sys_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                    cur.execute(q, j)
+                    con.commit()
 
 @app.route("/get_mail_storage_tables", methods=["POST"])
 def get_mail_storage_tables():
@@ -2781,9 +2789,10 @@ print("Scheduler is called.")
 sched = BackgroundScheduler(daemon=False)
 sched.add_job(add1, 'interval', seconds=10, max_instances=1)
 sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
+sched.add_job(insert_sms_mails, 'interval', seconds=120, max_instances=1)
 sched.start()
 ###
 
 if __name__ == '__main__':
-    # check_date()
+    insert_sms_mails()
     pass
