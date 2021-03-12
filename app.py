@@ -2777,13 +2777,13 @@ def temp_fun():
     #       pass
 
 ####for test purpose
-# print("Scheduler is called.")
-# sched = BackgroundScheduler(daemon=False)
-# sched.add_job(add1, 'interval', seconds=10, max_instances=1)
-# sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
-# sched.start()
+print("Scheduler is called.")
+sched = BackgroundScheduler(daemon=False)
+sched.add_job(add1, 'interval', seconds=10, max_instances=1)
+sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
+sched.start()
 ###
 
 if __name__ == '__main__':
-    check_date()
+    # check_date()
     pass
