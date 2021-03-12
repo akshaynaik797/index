@@ -211,7 +211,7 @@ def insert_sms_mails():
             q = f"select subject, date, completed, attach_path, sno, sender from {table} where completed not in ('p', 'X', '', 'S', 'pp') order by sno desc limit {last_rows}"
             cur.execute(q)
             r1 = cur.fetchall()
-            for j in r1:
+            for j in r1[::-1]:
                 j = list(j)
                 subject, sender = j[0], j[5]
                 for sub, email_id in exception_mails:
