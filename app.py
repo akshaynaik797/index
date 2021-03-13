@@ -113,7 +113,7 @@ def get_sms_mails():
     fields = ("subject","date","completed","attach_path","sno","row_id","hospital")
     with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
-        q = 'select subject,date,completed,attach_path,sno,row_id,hospital from sms_mails where id is null'
+        q = "select subject,date,completed,attach_path,sno,row_id,hospital from sms_mails where id=''"
         cur.execute(q)
         records = cur.fetchall()
     for i in records:
@@ -212,24 +212,28 @@ def insert_sms_mails():
             cur.execute(q)
             r1 = cur.fetchall()
             for j in r1[::-1]:
-                j = list(j)
-                subject, sender = j[0], j[5]
-                for sub, email_id in exception_mails:
-                    if sub in subject and email_id in sender:
-                        j[2] = 'X'
-                        break
-                j.append(hosp)
-                j.append(str(datetime.datetime.now()))
-                j = tuple(j)
-                q = "select * from sms_mails where subject=%s and date=%s and sno=%s limit 1"
-                data = (j[0], j[1], j[4])
-                cur.execute(q, data)
-                r2 = cur.fetchone()
-                if r2 is None:
-                    q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `sender`, `hospital`, sys_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                    cur.execute(q, j)
-                    con.commit()
-
+                try:
+                    t_id = ''
+                    j = list(j)
+                    subject, sender = j[0], j[5]
+                    for sub, email_id in exception_mails:
+                        if sub in subject and email_id in sender:
+                            t_id = 'X'
+                            break
+                    j.append(hosp)
+                    j.append(str(datetime.datetime.now()))
+                    j.append(t_id)
+                    j = tuple(j)
+                    q = "select * from sms_mails where subject=%s and date=%s and sno=%s limit 1"
+                    data = (j[0], j[1], j[4])
+                    cur.execute(q, data)
+                    r2 = cur.fetchone()
+                    if r2 is None:
+                        q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `sender`, `hospital`, sys_time, `id`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                        cur.execute(q, j)
+                        con.commit()
+                except:
+                    log_exceptions(j=j)
 @app.route("/get_mail_storage_tables", methods=["POST"])
 def get_mail_storage_tables():
     fields = ('table_id','table_name','active','flag','id','subject','date','hospital')
