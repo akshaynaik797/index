@@ -113,7 +113,7 @@ def get_sms_mails():
     fields = ("subject","date","completed","attach_path","sno","row_id","hospital")
     with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
-        q = "select subject,date,completed,attach_path,sno,row_id,hospital from sms_mails where id=''"
+        q = "select subject,date,completed,attach_path,sno,row_id,hospital from sms_mails where id is null"
         cur.execute(q)
         records = cur.fetchall()
     for i in records:
@@ -213,7 +213,7 @@ def insert_sms_mails():
             r1 = cur.fetchall()
             for j in r1[::-1]:
                 try:
-                    t_id = ''
+                    t_id = None
                     j = list(j)
                     subject, sender = j[0], j[5]
                     for sub, email_id in exception_mails:
