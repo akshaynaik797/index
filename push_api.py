@@ -53,7 +53,7 @@ def api_update_trigger(ref_no, comment, status):
                 "body": body
             }
             response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
-            log_data(token=i[1], response=response.text)
+            log_data(token=i[1], response=response.text, payload=payload)
             pass
 
 if __name__ == "__main__":

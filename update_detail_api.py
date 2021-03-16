@@ -7,6 +7,19 @@ import mysql.connector
 from make_log import log_exceptions
 from push_api import api_update_trigger
 
+def get_api_url(hosp, process):
+    api_conn_data = {'host': "iclaimdev.caq5osti8c47.ap-south-1.rds.amazonaws.com",
+                 'user': "admin",
+                 'password': "Welcome1!",
+                 'database': 'portals'}
+    with mysql.connector.connect(**api_conn_data) as con:
+        cur = con.cursor()
+        query = 'select apiLink from apisConfig where hospitalID=%s and processName=%s limit 1;'
+        cur.execute(query, (hosp, process))
+        result = cur.fetchone()
+        if result is not None:
+            return result[0]
+    return ''
 
 def get_update_log(row_no):
     response = ""
@@ -15,8 +28,8 @@ def get_update_log(row_no):
     try:
         with mysql.connector.connect(**conn_data) as con:
             cur = con.cursor()
-            b = f"select  preauthid,policyno,memberid,comment,hos_id,status  from updation_detail_log where row_no = '{row_no}'"
-            cur.execute(b)
+            b = f"select  preauthid,policyno,memberid,comment,hos_id,status  from updation_detail_log where row_no=%s"
+            cur.execute(b, (row_no,))
             r = cur.fetchone()
             #handle null row
             if r is not None:
@@ -25,10 +38,7 @@ def get_update_log(row_no):
                 preauthid, policyno, memberid, comment, hos_id, status = "", "", "", "", "", ""
                 return
 
-        if hos_id == 'Max':
-            url = 'https://vnusoftware.com/iclaimmax/api/preauth/vnupatientsearch'
-        else:
-            url = 'https://vnusoftware.com/iclaimportal/api/preauth/vnupatientsearch'
+        url = get_api_url(hos_id, 'getupdateDetailsLog')
         payload = {
             'memberid': memberid,
             'preauthid': preauthid,
@@ -80,5 +90,5 @@ def get_update_log(row_no):
 
 
 if __name__ == '__main__':
-    a = get_update_log('7555')
+    a = get_update_log('20708')
     pass
