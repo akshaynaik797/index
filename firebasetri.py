@@ -11,7 +11,7 @@ def send_to_token():
 
     # See documentation on defining a message payload.
     message = messaging.Message(
-        data={6
+        data={
             'score': '850',
             'time': '2:45',
         },
