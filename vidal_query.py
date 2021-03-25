@@ -33,6 +33,8 @@ try:
     diff = end - start
     diff = str(diff.total_seconds())
     data.append(diff)
+    if 'Receipt' in data[4]:
+        data[3] = 'ack'
     write(data)
     set_flag_graphapi(sys.argv[5], sys.argv[6], 'X',sys.argv[7])
 

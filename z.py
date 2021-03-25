@@ -3,10 +3,10 @@ import subprocess
 import mysql.connector
 from custom_parallel import conn_data
 def run():
-    ins = "star"
-    ct = "preauth"
-    fpath = "/home/akshay/temp/20210225091127_808c351e-f72a-46d9-9a4b-8c79028ba03d_Authorization_1458764.pdf"
-    subject = "Claim Query Letter- MemberID:-N90A0175TODAY	Claim No:-90222021477211"
+    ins = "vidal"
+    ct = "query"
+    fpath = "/home/akshay/temp/78771914_.pdf"
+    subject = "Receipt of Shortfall documents for PRIYA R KHARADE; Corporate name :FUJITEC INDIA PVT LTD; Employee no:IT 1091;"
     l_time = "07/12/2020 18:22:25"
     hid = "test"
     mail_id = 'asdasdasda'
@@ -82,7 +82,32 @@ def check():
                     not_in_graph += 1
             print("in", in_graph, not_in_graph)
 
+def get_ins_process(subject, email):
+    ins, process = "", ""
+    q1 = "select IC from email_ids where email_ids=%s limit 1"
+    q2 = "select subject, table_name from email_master where ic_id=%s"
+    q3 = "select IC_name from IC_name where IC=%s limit 1"
+    with mysql.connector.connect(**conn_data) as con:
+        cur = con.cursor(buffered=True)
+        cur.execute(q1, (email,))
+        result = cur.fetchone()
+        if result is not None:
+            ic_id = result[0]
+            cur.execute(q2, (ic_id,))
+            result = cur.fetchall()
+            for sub, pro in result:
+                if 'Intimation No' in subject:
+                    return ('big', 'settlement')
+                if 'STAR HEALTH AND ALLIED INSUR04239' in subject:
+                    return ('small', 'settlement')
+                if sub in subject:
+                    cur.execute(q3, (ic_id,))
+                    result1 = cur.fetchone()
+                    if result1 is not None:
+                        return (result1[0], pro)
+    return ins, process
 
 if __name__ == "__main__":
+    a = get_ins_process('Cashless Enhancement of Patient Name : Suresh Gorawade  (Father) Employee Name :Ravi Suresh Gorawade    (Emp ID : 10083327)', 'donotreply@fhpl.net')
     run()
     pass

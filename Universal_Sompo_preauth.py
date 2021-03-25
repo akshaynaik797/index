@@ -1,5 +1,6 @@
 import datetime
 import sys
+import re
 
 import pdftotext
 

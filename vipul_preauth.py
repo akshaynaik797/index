@@ -1,5 +1,6 @@
 import datetime
 import sys
+import re
 
 import pdftotext
 
@@ -23,6 +24,11 @@ with open('vipul/output.txt', 'r') as myfile:
 try:
     datadict = make_datadict(f)
     datadict['insname'] = ''
+    if datadict['preid'] == '':
+        temp = re.compile(r"(?<=Claim) *\w+").search(f)
+        if temp is not None:
+            temp = temp.group().strip()
+            datadict['preid'] = temp
     data = [i for i in sys.argv[1:]]
     data2 = [datadict[i] for i in datadict]
     data.extend(data2)

@@ -15,7 +15,8 @@ preid_reg_list = [r"(?<=Claim Number).*(?=\(0)", r"(?<=Claim Number).*", r"(?<=P
                   r"(?<=refer the Pre-Auth Number).*(?=in your)", r"(?<=Cashless Claim Reference Number:).*",
                   r"(?<=Cashless Authorization Letter).*", r"(?<=Our CCN.).*", r"(?<=CCN:)[ \w-]+",
                   r"(?<=Claim Control No :)[\w -]+", r"(?<=Preauthorization Number).*(?=,)", "(?<=GXL No.).*",
-                  r"(?<=SHORTFALL No\.).*(?=-)", r"(?<=SHORTFALL No.).*"]
+                  r"(?<=SHORTFALL No\.).*(?=-)", r"(?<=SHORTFALL No.).*", r"(?<=Claim).*",
+                  r"(?<=Claim No:).*(?=\(Please)", r"(?<=Claim Control Number).*"]
 
 pname_reg_list = [r"(?<=Patient Name).*(?=Age)", r"(?<=Patient Name).*", r"(?<=Name of Insured Patient).*(?=Age)",
                   r"(?<=Name of Insured-).*(?=Age)", r"(?<=Name Of Patient).*(?=AL)", r"(?<=Patient Name =:).*",
@@ -57,7 +58,8 @@ memid_reg_list = [r"(?<=Insurer Id of the Patient).*", r"(?<=Patient's Member UH
                   r"(?<=Member ID).*(?=Provisional Diagnosis)", r"(?<=Patient's Member ID).*",
                   r"(?<=PHS ID).*(?=has been)", r"(?<=Card no.).*", r"(?<=Patient Card ID).*",
                   r"(?<=ID Card \().*(?=\))", r"(?<=MemberID:).*", r"(?<=Member Code).*",
-                  r"(?<=ID/TPA/insurer Id of the Patient).*", r"\w+(?=\r?\nProvisional Diagnosis )"]
+                  r"(?<=ID/TPA/insurer Id of the Patient).*", r"\w+(?=\r?\nProvisional Diagnosis )",
+                  r"(?<=Patient Card Number:).*(?=Proposed)"]
 
 amount_reg_list = [r"(?<=Total Authorized amount).*", r"(?<=Approved amount).*", r"(?<=Approved Amount).*",
                    r"(?<=Total Authorized Amount).*(?=\/)", r"(?<=NET Approved Amount)\S+\s+\S+",
@@ -69,7 +71,8 @@ amount_reg_list = [r"(?<=Total Authorized amount).*", r"(?<=Approved amount).*",
                    r"\d+(?=\r?\nRoom rent)", r"(?<=Further guarantee of payment up to).*(?=\(Rs.)",
                    r"(?<=Initial Approval Amount).*(?=\()",
                    r"(?<=We hereby Authorize and Guarantee a Payment of Rs.).*(?=/-)",
-                   r"(?<=We hereby authorize and guarantee for payment up to Rs.).*(?=,)"]
+                   r"(?<=We hereby authorize and guarantee for payment up to Rs.).*(?=,)",
+                   r"(?<=Total Authorized).*(?=\()", r"(?<=additional amount of Rs.).*(?=/-)", r"(?<=Authorized Amount).*"]
 
 diagno_reg_list = [r"", r"(?<=Ailment).*", r"(?<=Diagnosis).*", r"(?<=Diagnosis).*(?=\()",
                    r"(?<=Diagnosis & Proposed).*", r"(?<=Diagnosis).*(?=Proposed)", r"(?<=Provisional diagnosis).*",

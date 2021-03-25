@@ -25,6 +25,8 @@ try:
         status = 'Approved'
     if 'Reject' in f:
         status = 'Denial'
+    if 'Additional information' in f:
+        status = 'Information Awaiting'
 
     preid_reg_list = [r"", r"(?<=Claim Number).*(?=\()"]
 

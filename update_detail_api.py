@@ -28,8 +28,8 @@ def get_update_log(row_no):
     try:
         with mysql.connector.connect(**conn_data) as con:
             cur = con.cursor()
-            b = f"select  preauthid,policyno,memberid,comment,hos_id,status  from updation_detail_log where row_no=%s"
-            cur.execute(b, (row_no,))
+            b = f"select  preauthid,policyno,memberid,comment,hos_id,status  from updation_detail_log where row_no = '{row_no}'"
+            cur.execute(b)
             r = cur.fetchone()
             #handle null row
             if r is not None:
@@ -90,5 +90,5 @@ def get_update_log(row_no):
 
 
 if __name__ == '__main__':
-    a = get_update_log('20708')
+    a = get_update_log('26567')
     pass
