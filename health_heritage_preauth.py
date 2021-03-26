@@ -1,6 +1,7 @@
 import sys
 import datetime
 import sys
+import re
 
 import pdftotext
 
@@ -22,6 +23,14 @@ with open('health_heritage/output.txt', 'r') as myfile:
 
 try:
     datadict = make_datadict(f)
+    if datadict['amount'] == '':
+        with open('health_heritage/output.txt', 'r') as myfile:
+            f_list = myfile.readlines()
+            for i, j in enumerate(f_list):
+                if 'Amount' in j:
+                    temp = re.split(r" {2,}", f_list[i+1])
+                    datadict['amount'] = temp[2]
+                    break
     datadict['insname'] = ''
     data = [i for i in sys.argv[1:]]
     data2 = [datadict[i] for i in datadict]

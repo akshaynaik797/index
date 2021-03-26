@@ -3,13 +3,13 @@ import subprocess
 import mysql.connector
 from custom_parallel import conn_data
 def run():
-    ins = "vidal"
-    ct = "query"
-    fpath = "/home/akshay/temp/78771914_.pdf"
-    subject = "Receipt of Shortfall documents for PRIYA R KHARADE; Corporate name :FUJITEC INDIA PVT LTD; Employee no:IT 1091;"
+    ins = "health_heritage"
+    ct = "preauth"
+    fpath = "/home/akshay/temp/4033_PreAuthAppLetter_HH222106267_24032021190527.pdf"
+    subject = "Cashless Claim settlement Letter: Patient Name: Chaya Bhanushali, Member ID: 1004055040, Pre-auth no: 21012700613, Policy No. 1240284300"
     l_time = "07/12/2020 18:22:25"
-    hid = "test"
-    mail_id = 'asdasdasda'
+    hid = "noble"
+    mail_id = '1786552ccfbbcb2e'
     subprocess.run(
               ["python", ins + "_" + ct + ".py", fpath, str(999999), ins,
                ct, subject, l_time, hid, mail_id])

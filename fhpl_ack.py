@@ -4,11 +4,12 @@ import subprocess
 import sys
 
 import pdftotext
+import mysql.connector
 
 from make_log import log_exceptions
-from custom_parallel import write
+from custom_parallel import write, conn_data
 from custom_datadict import make_datadict
-from custom_app import set_flag_graphapi
+from custom_app import set_flag_graphapi, create_settlement_folder
 
 set_flag_graphapi(sys.argv[5], sys.argv[6], 'E',sys.argv[7])
 
@@ -36,8 +37,28 @@ try:
     data.append(diff)
     if 'Authorization Letter' in f:
         data[3] = 'preauth'
-    write(data)
-    set_flag_graphapi(sys.argv[5], sys.argv[6], 'X',sys.argv[7])
-
+    sender = ''
+    filepath = create_settlement_folder(data[6], data[2], data[5], data[0])
+    if 'Cashless Claim settlement Letter' in data[4]:
+        try:
+            with mysql.connector.connect(**conn_data) as con:
+                cur = con.cursor()
+                q = f"select sender from {data[6]}_mails where id=%s limit 1"
+                cur.execute(q, (data[7],))
+                r = cur.fetchone()
+                if r is not None:
+                    sender = r[0]
+                q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                data1 = (data[7], data[4], data[5], str(datetime.datetime.now()), filepath, '', sender, data[6])
+                cur.execute(q, data1)
+                q1 = f"update graphApi set completed = 'S' where date = %s and subject=%s;"
+                data1 = (data[5], data[4])
+                cur.execute(q1, data1)
+                con.commit()
+        except:
+            log_exceptions()
+    else:
+        write(data)
+        set_flag_graphapi(sys.argv[5], sys.argv[6], 'X',sys.argv[7])
 except:
     log_exceptions()
