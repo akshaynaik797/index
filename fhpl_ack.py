@@ -51,10 +51,7 @@ try:
                 q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                 data1 = (data[7], data[4], data[5], str(datetime.datetime.now()), filepath, '', sender, data[6])
                 cur.execute(q, data1)
-                q1 = f"update graphApi set completed = 'S' where date = %s and subject=%s;"
-                data1 = (data[5], data[4])
-                cur.execute(q1, data1)
-                con.commit()
+                set_flag_graphapi(sys.argv[5], sys.argv[6], 'X',sys.argv[7])
         except:
             log_exceptions()
     else:

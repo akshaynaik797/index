@@ -49,6 +49,7 @@ from dateutil import parser as date_parser
 from make_log import log_exceptions, log_data, custom_log_data
 from cust_time_functs import ifutc_to_indian, time_fun_two
 from city_api import get_from_db
+from push_api import api_update_trigger
 from update_detail_api import get_update_log
 from custom_app import check_if_sub_and_ltime_exist, get_fp_seq, create_settlement_folder, get_ins_process
 from custom_parallel import conn_data
@@ -232,6 +233,7 @@ def insert_sms_mails():
                         q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `sender`, `hospital`, sys_time, `id`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
                         cur.execute(q, j)
                         con.commit()
+                        api_update_trigger(j[0], 'inserted', 'sms_mails')
                 except:
                     log_exceptions(j=j)
 @app.route("/get_mail_storage_tables", methods=["POST"])
@@ -456,7 +458,6 @@ def testapi():
 def testpostapi():
   return render_template("testpostmethod.html")
 
-
 @app.route("/api/postUpdateDetailsLogs", methods=["POST"])
 def postUpdateLog():
   weightage = {
@@ -508,7 +509,7 @@ def postUpdateLog():
 
   with mysql.connector.connect(**conn_data) as con:
     cur = con.cursor()
-    q = f'select preauthid,amount,status,process,lettertime,policyno,memberid,hos_id, comment from updation_detail_log where row_no={row_no}'
+    q = f'select preauthid,amount,status,process,lettertime,policyno,memberid,hos_id, comment,endtime from updation_detail_log where row_no={row_no}'
     print(q)
     log_api_data('q', q)
     cur.execute(q)
@@ -540,7 +541,7 @@ def postUpdateLog():
   if request.form.get('refno') != None:
     refno = request.form['refno']
   try:
-    time_diff2 = datetime.datetime.now() - datetime.datetime.strptime(lettertime, '%d/%m/%Y %H:%M:%S')
+    time_diff2 = datetime.datetime.now() - datetime.datetime.strptime(r[9].split('.')[0], '%Y-%m-%d %H:%M:%S')
     time_diff2 = time_diff2.total_seconds()
     with mysql.connector.connect(**conn_data) as con:
       cur = con.cursor()
@@ -559,6 +560,9 @@ def postUpdateLog():
     char = 'X'
   else:
     char = 'x'
+  if 'completed' in request.form:
+      if request.form['completed'] == 'A':
+          char = 'A'
   changed = []
   formdata = (preauthid, amount, status, policyno, memberid, comment)
   dbdata = (r[0], r[1], r[2], r[5], r[6], r[8])
@@ -960,7 +964,30 @@ def getUpdateLog():
             "InsurerId": "",
             "insname": ""
           }
-
+        #localDic["searchdata"]["current_status"], localDic['status']
+        #status 1.info awaiting, tag id =  Q02
+        #2.denial , tag id = D05
+        #preauthid, amount, status, lettertime, policyno, memberid, comment, tag_id, refno
+        tag_id = ''
+        if 'wait' in localDic['status']:
+            tag_id = 'Q02'
+        if 'nial' in localDic['status']:
+            tag_id = 'D05'
+        r = get_status_table()
+        for curs, status in r:
+            if curs in localDic["searchdata"]["current_status"] and status == localDic['status']:
+                requests.post(url_for("postUpdateLog", _external=True),
+                              data={"row_no": localDic['row_no'],
+                                    "completed": "A",
+                                    "preauthid": localDic['preauthid'],
+                                    "amount": localDic['amount'],
+                                    "status": localDic['status'],
+                                    "lettertime": localDic['lettertime'],
+                                    "policyno": localDic['policyno'],
+                                    "memberid": localDic['memberid'],
+                                    "comment": localDic['comment'],
+                                    "tag_id": tag_id,
+                                    "refno": localDic["searchdata"]['refno']})
         myList.append(localDic)
 
       return jsonify({
@@ -1021,6 +1048,15 @@ def get_file():
         # return send_from_directory(r"C:\Users\91798\Desktop\download\templates", filename='ASHISHKUMAR_IT.pdf', as_attachment=True)
         return send_from_directory(dirname, filename=filename, as_attachment=True)
 
+
+def get_status_table():
+    r = []
+    with mysql.connector.connect(**conn_data) as mydb:
+        cur = mydb.cursor()
+        q = "select current_status, status from status_table"
+        cur.execute(q)
+        r = cur.fetchall()
+    return r
 
 @app.route('/add', methods=["POST", "GET"])
 def add():
@@ -2798,5 +2834,5 @@ sched.start()
 ###
 
 if __name__ == '__main__':
-    insert_sms_mails()
+    app.run(host='0.0.0.0')
     pass
