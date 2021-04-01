@@ -708,7 +708,7 @@ def postUpdateLog():
           #   con.commit()
           apimessage = 'Record successfully updated, and API successfully called'
           request = requests.post(url_for("change_filepath_flag", _external=True),
-                                  data={"row_no": row_no, "completed": char})
+                                  data={"row_no": row_no, "completed": char, "refno": refno})
 
           # update completed flag in table
           # with sqlite3.connect('../mail_fetch/database1.db', timeout=timeout_time) as con:
@@ -750,6 +750,8 @@ def change_filepath_flag():
     if not os.path.exists(letters_folder):
         os.mkdir(letters_folder)
     data, q = request.form.to_dict(), ""
+    if 'refno' not in data:
+        return jsonify({"msg": "fail"})
     if 'completed' not in data:
         return jsonify({"msg": "fail"})
     if 'row_no' not in data and 'hos_id' not in data:
@@ -800,6 +802,7 @@ def change_filepath_flag():
                     q = "select * from updation_detail_log where row_no=%s limit 1"
                     cur.execute(q, (data['row_no'],))
                     record = cur.fetchone()
+                    record = tuple(list(record) + [data['refno']])
                     q = "insert into updation_detail_log_copy values (" + '%s,'*len(record) + ")"
                     q = q.replace(',)', ')')
                     cur.execute(q, record)
