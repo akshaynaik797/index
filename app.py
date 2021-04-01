@@ -593,6 +593,10 @@ def postUpdateLog():
       query = query + " preauthid='%s'" % preauthid
       flag = 1
 
+    if request.form.get('refno') != None:
+      query = query + " refno='%s'" % refno
+      flag = 1
+
     if request.form.get('amount') != None:
       if flag == 1:
         query = query + ", "
