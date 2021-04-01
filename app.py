@@ -233,7 +233,8 @@ def insert_sms_mails():
                         q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `sender`, `hospital`, sys_time, `id`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
                         cur.execute(q, j)
                         con.commit()
-                        api_update_trigger(j[0], 'inserted', 'sms_mails')
+                        if t_id == None:
+                            api_update_trigger(j[0], hosp, 'sms_mails')
                 except:
                     log_exceptions(j=j)
 @app.route("/get_mail_storage_tables", methods=["POST"])
@@ -591,10 +592,6 @@ def postUpdateLog():
     flag = 0
     if request.form.get('preauthid') != None:
       query = query + " preauthid='%s'" % preauthid
-      flag = 1
-
-    if request.form.get('refno') != None:
-      query = query + " refno='%s'" % refno
       flag = 1
 
     if request.form.get('amount') != None:
