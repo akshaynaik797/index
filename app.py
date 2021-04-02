@@ -992,6 +992,23 @@ def getUpdateLog():
                                     "comment": localDic['comment'],
                                     "tag_id": tag_id,
                                     "refno": localDic["searchdata"]['refno']})
+
+        r = get_exp_status_table()
+        for curs, status, insurer in r:
+            if curs in localDic["searchdata"]["current_status"] and status == localDic['status'] and insurer == localDic['insurerid']:
+                requests.post(url_for("postUpdateLog", _external=True),
+                              data={"row_no": localDic['row_no'],
+                                    "completed": "A",
+                                    "preauthid": localDic['preauthid'],
+                                    "amount": localDic['amount'],
+                                    "status": localDic['status'],
+                                    "lettertime": localDic['lettertime'],
+                                    "policyno": localDic['policyno'],
+                                    "memberid": localDic['memberid'],
+                                    "comment": localDic['comment'],
+                                    "tag_id": tag_id,
+                                    "refno": localDic["searchdata"]['refno']})
+
         myList.append(localDic)
 
       return jsonify({
@@ -1061,6 +1078,17 @@ def get_status_table():
         cur.execute(q)
         r = cur.fetchall()
     return r
+
+def get_exp_status_table():
+    r = []
+    with mysql.connector.connect(**conn_data) as mydb:
+        cur = mydb.cursor()
+        q = "select current_status, status, insurer from exception_status_table"
+        cur.execute(q)
+        r = cur.fetchall()
+    return r
+
+
 
 @app.route('/add', methods=["POST", "GET"])
 def add():
