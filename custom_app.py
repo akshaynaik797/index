@@ -104,5 +104,19 @@ def create_settlement_folder(hosp, ins, date, filepath):
         log_exceptions(hosp=hosp, ins=ins, date=date, filepath=filepath)
     return os.path.abspath(dst)
 
+def get_api_url(hosp, process):
+    api_conn_data = {'host': "iclaimdev.caq5osti8c47.ap-south-1.rds.amazonaws.com",
+                 'user': "admin",
+                 'password': "Welcome1!",
+                 'database': 'portals'}
+    with mysql.connector.connect(**api_conn_data) as con:
+        cur = con.cursor()
+        query = 'select apiLink from apisConfig where hospitalID=%s and processName=%s limit 1;'
+        cur.execute(query, (hosp, process))
+        result = cur.fetchone()
+        if result is not None:
+            return result[0]
+    return ''
+
 if __name__ == "__main__":
     set_flag_graphapi('Welcome', '19/12/2020 13:17:22', 'sample')

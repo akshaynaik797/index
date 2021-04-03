@@ -49,9 +49,8 @@ from dateutil import parser as date_parser
 from make_log import log_exceptions, log_data, custom_log_data
 from cust_time_functs import ifutc_to_indian, time_fun_two
 from city_api import get_from_db
-from push_api import api_update_trigger
 from update_detail_api import get_update_log
-from custom_app import check_if_sub_and_ltime_exist, get_fp_seq, create_settlement_folder, get_ins_process, get_api_url
+from custom_app import check_if_sub_and_ltime_exist, get_fp_seq, create_settlement_folder
 from custom_parallel import conn_data
 from sms_alerts import send_sms
 
@@ -114,7 +113,7 @@ def get_sms_mails():
     fields = ("subject","date","completed","attach_path","sno","row_id","hospital")
     with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
-        q = "select subject,date,completed,attach_path,sno,row_id,hospital from sms_mails where id is null"
+        q = 'select subject,date,completed,attach_path,sno,row_id,hospital from sms_mails where id is null'
         cur.execute(q)
         records = cur.fetchall()
     for i in records:
@@ -178,6 +177,21 @@ def check_date():
             temp[key] = value
         record_dict[temp['table_name']] = temp
     with mysql.connector.connect(**conn_data) as con:
+        for temp, i in record_dict.items():
+            cur = con.cursor()
+            q = f"select subject, date, completed, attach_path, sno from {i['table_name']} where completed not in ('p', 'X', '', 'S', 'DDD', 'pp') and sno > %s"
+            cur.execute(q, (i['sno'],))
+            result = cur.fetchall()
+            for j in result:
+                j = list(j)
+                j.append(i['hospital'])
+                j = tuple(j)
+                q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `hospital`) VALUES (%s, %s, %s, %s, %s, %s)"
+                cur = con.cursor()
+                cur.execute(q, j)
+                send_sms_text('9967044874', f"{j[0]}|||{j[1]}|||{j[2]}|||{i['hospital']}")
+        con.commit()
+    with mysql.connector.connect(**conn_data) as con:
         for i in record_dict:
             table_name = record_dict[i]['table_name']
             cur = con.cursor()
@@ -198,45 +212,6 @@ def check_date():
                 cur.execute(q, (flag, mid, subject, date, sno, table_name))
         con.commit()
 
-def insert_sms_mails():
-    last_rows = 50
-    with mysql.connector.connect(**conn_data) as con:
-        cur = con.cursor()
-        q = 'select subject, email from exceptions_sms_mails'
-        cur.execute(q)
-        exception_mails = cur.fetchall()
-        q = 'select table_name, hospital from mail_storage_tables where active=1'
-        cur.execute(q)
-        result = cur.fetchall()
-        for table, hosp in result:
-            q = f"select subject, date, completed, attach_path, sno, sender from {table} where completed not in ('p', 'X', '', 'S', 'pp') order by sno desc limit {last_rows}"
-            cur.execute(q)
-            r1 = cur.fetchall()
-            for j in r1[::-1]:
-                try:
-                    t_id = None
-                    j = list(j)
-                    subject, sender = j[0], j[5]
-                    for sub, email_id in exception_mails:
-                        if sub in subject and email_id in sender:
-                            t_id = 'X'
-                            break
-                    j.append(hosp)
-                    j.append(str(datetime.datetime.now()))
-                    j.append(t_id)
-                    j = tuple(j)
-                    q = "select * from sms_mails where subject=%s and date=%s and sno=%s limit 1"
-                    data = (j[0], j[1], j[4])
-                    cur.execute(q, data)
-                    r2 = cur.fetchone()
-                    if r2 is None:
-                        q = "INSERT INTO sms_mails (`subject`,`date`,`completed`,`attach_path`,`sno`, `sender`, `hospital`, sys_time, `id`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                        cur.execute(q, j)
-                        con.commit()
-                        if t_id == None:
-                            api_update_trigger(j[0], hosp, 'sms_mails')
-                except:
-                    log_exceptions(j=j)
 @app.route("/get_mail_storage_tables", methods=["POST"])
 def get_mail_storage_tables():
     fields = ('table_id','table_name','active','flag','id','subject','date','hospital')
@@ -317,59 +292,6 @@ def set_flag():
             return jsonify('done')
     return jsonify('record not found')
 
-@app.route("/setsettlementflag", methods=["POST"])
-def set_settlement_flag():
-    data, records = request.form.to_dict(), []
-    fields = ('subject', 'date', 'flag', 'hospital', 'row_id')
-    for i in fields:
-        if i not in data:
-            return jsonify(f"{i} parameter required")
-    with mysql.connector.connect(**conn_data) as con:
-        cur = con.cursor()
-        q = "update sms_mails set id='X' where row_id=%s"
-        cur.execute(q, (data['row_id'], ))
-        con.commit()
-    with mysql.connector.connect(**conn_data) as con:
-        cur = con.cursor()
-        q = "select table_name, hospital from mail_storage_tables where active='1'"
-        cur.execute(q)
-        table_list = cur.fetchall()
-    for i, j in table_list:
-        if j == data['hospital']:
-            table = i
-            break
-    q = "select * from " + table + " where subject=%s and date=%s"
-    with mysql.connector.connect(**conn_data) as con:
-        cur = con.cursor()
-        cur.execute(q, (data['subject'], data['date'] ))
-        record = cur.fetchone()
-        if record is not None:
-            mid, subject, date, sys_time, attach_path, completed, sender, sno, folder, process = record
-            # if attach_path == '' or attach_path is None:
-            #     return jsonify('attachment not found')
-            ins, proc = get_ins_process(subject, sender)
-            if proc != 'settlement':
-                return jsonify('wrong process '+proc)
-            filepath = ""
-            try:
-                filepath = create_settlement_folder(data['hospital'], ins, data, attach_path)
-            except:
-                pass
-            try:
-                q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                data1 = (mid, subject, date, str(datetime.datetime.now()), filepath, '', sender, data['hospital'])
-                cur.execute(q, data1)
-                q1 = "update " + table + " set completed = 'S' where date = %s and subject=%s;"
-                data1 = (date, subject)
-                cur.execute(q1, data1)
-                con.commit()
-            except:
-                log_exceptions()
-                return jsonify('error')
-            return jsonify('done')
-    return jsonify('record not found')
-
-
 @app.route("/process_record", methods=["POST"])
 def process_record():
     data, records = request.form.to_dict(), []
@@ -419,25 +341,24 @@ def get_id():
   return jsonify(data)
 
 
-@app.route('/mob_app_insert', methods=["POST"])
+@app.route('/mob_app_insert')
 def mob_app_insert():
-  data = request.form.to_dict()
-  device_id = data['device_id']
-  token = data['token']
+  dbpath = 'database1.db'
+  device_id = request.args['device_id']
+  token = request.args['token']
   with mysql.connector.connect(**conn_data) as con:
     cur = con.cursor()
     q = f"select * from mob_app where device_id='{device_id}'"
-    cur.execute(q)
-    r = cur.fetchone()
-    if r is not None:
+    if cur.execute(q).fetchone() is not None:
       q1 = f"update mob_app set token='{token}' where device_id='{device_id}'"
       cur.execute(q1)
       con.commit()
       return jsonify('update query successful')
-    else:
+    elif cur.execute(q).fetchone() is None:
       cur.execute(f"insert into mob_app values('{device_id}', '{token}')")
       con.commit()
       return jsonify('insert query successful')
+  return jsonify('query failed')
 
 
 @app.route('/hello')
@@ -458,6 +379,7 @@ def testapi():
 @app.route("/api/testpostapi")
 def testpostapi():
   return render_template("testpostmethod.html")
+
 
 @app.route("/api/postUpdateDetailsLogs", methods=["POST"])
 def postUpdateLog():
@@ -510,7 +432,7 @@ def postUpdateLog():
 
   with mysql.connector.connect(**conn_data) as con:
     cur = con.cursor()
-    q = f'select preauthid,amount,status,process,lettertime,policyno,memberid,hos_id, comment,endtime from updation_detail_log where row_no={row_no}'
+    q = f'select preauthid,amount,status,process,lettertime,policyno,memberid,hos_id, comment from updation_detail_log where row_no={row_no}'
     print(q)
     log_api_data('q', q)
     cur.execute(q)
@@ -542,7 +464,7 @@ def postUpdateLog():
   if request.form.get('refno') != None:
     refno = request.form['refno']
   try:
-    time_diff2 = datetime.datetime.now() - datetime.datetime.strptime(r[9].split('.')[0], '%Y-%m-%d %H:%M:%S')
+    time_diff2 = datetime.datetime.now() - datetime.datetime.strptime(lettertime, '%d/%m/%Y %H:%M:%S')
     time_diff2 = time_diff2.total_seconds()
     with mysql.connector.connect(**conn_data) as con:
       cur = con.cursor()
@@ -561,9 +483,6 @@ def postUpdateLog():
     char = 'X'
   else:
     char = 'x'
-  if 'completed' in request.form:
-      if request.form['completed'] == 'A':
-          char = 'A'
   changed = []
   formdata = (preauthid, amount, status, policyno, memberid, comment)
   dbdata = (r[0], r[1], r[2], r[5], r[6], r[8])
@@ -708,7 +627,7 @@ def postUpdateLog():
           #   con.commit()
           apimessage = 'Record successfully updated, and API successfully called'
           request = requests.post(url_for("change_filepath_flag", _external=True),
-                                  data={"row_no": row_no, "completed": char, "refno": refno})
+                                  data={"row_no": row_no, "completed": char})
 
           # update completed flag in table
           # with sqlite3.connect('../mail_fetch/database1.db', timeout=timeout_time) as con:
@@ -750,8 +669,6 @@ def change_filepath_flag():
     if not os.path.exists(letters_folder):
         os.mkdir(letters_folder)
     data, q = request.form.to_dict(), ""
-    if 'refno' not in data:
-        return jsonify({"msg": "fail"})
     if 'completed' not in data:
         return jsonify({"msg": "fail"})
     if 'row_no' not in data and 'hos_id' not in data:
@@ -802,7 +719,6 @@ def change_filepath_flag():
                     q = "select * from updation_detail_log where row_no=%s limit 1"
                     cur.execute(q, (data['row_no'],))
                     record = cur.fetchone()
-                    record = tuple(list(record) + [data['refno']])
                     q = "insert into updation_detail_log_copy values (" + '%s,'*len(record) + ")"
                     q = q.replace(',)', ')')
                     cur.execute(q, record)
@@ -812,6 +728,21 @@ def change_filepath_flag():
                     con.commit()
                     return jsonify({"msg": "success"})
             return jsonify({"msg": "fail"})
+
+def get_api_url(hosp, process):
+    api_conn_data = {'host': "iclaimdev.caq5osti8c47.ap-south-1.rds.amazonaws.com",
+                 'user': "admin",
+                 'password': "Welcome1!",
+                 'database': 'portals'}
+    with mysql.connector.connect(**api_conn_data) as con:
+        cur = con.cursor()
+        query = 'select apiLink from apisConfig where hospitalID=%s and processName=%s limit 1;'
+        cur.execute(query, (hosp, process))
+        result = cur.fetchone()
+        if result is not None:
+            return result[0]
+    return ''
+
 
 @app.route("/api/getupdateDetailsLog", methods=["POST"])
 def getUpdateLog():
@@ -953,46 +884,6 @@ def getUpdateLog():
             "InsurerId": "",
             "insname": ""
           }
-        #localDic["searchdata"]["current_status"], localDic['status']
-        #status 1.info awaiting, tag id =  Q02
-        #2.denial , tag id = D05
-        #preauthid, amount, status, lettertime, policyno, memberid, comment, tag_id, refno
-        # tag_id = ''
-        # if 'wait' in localDic['status']:
-        #     tag_id = 'Q02'
-        # if 'nial' in localDic['status']:
-        #     tag_id = 'D05'
-        # r = get_status_table()
-        # for curs, status in r:
-        #     if curs in localDic["searchdata"]["current_status"] and status == localDic['status']:
-        #         requests.post(url_for("postUpdateLog", _external=True),
-        #                       data={"row_no": localDic['row_no'],
-        #                             "completed": "A",
-        #                             "preauthid": localDic['preauthid'],
-        #                             "amount": localDic['amount'],
-        #                             "status": localDic['status'],
-        #                             "lettertime": localDic['lettertime'],
-        #                             "policyno": localDic['policyno'],
-        #                             "memberid": localDic['memberid'],
-        #                             "comment": localDic['comment'],
-        #                             "tag_id": tag_id,
-        #                             "refno": localDic["searchdata"]['refno']})
-        #
-        # r = get_exp_status_table()
-        # for curs, status, insurer in r:
-        #     if curs in localDic["searchdata"]["current_status"] and status == localDic['status'] and insurer == localDic['insurerid']:
-        #         requests.post(url_for("postUpdateLog", _external=True),
-        #                       data={"row_no": localDic['row_no'],
-        #                             "completed": "A",
-        #                             "preauthid": localDic['preauthid'],
-        #                             "amount": localDic['amount'],
-        #                             "status": localDic['status'],
-        #                             "lettertime": localDic['lettertime'],
-        #                             "policyno": localDic['policyno'],
-        #                             "memberid": localDic['memberid'],
-        #                             "comment": localDic['comment'],
-        #                             "tag_id": tag_id,
-        #                             "refno": localDic["searchdata"]['refno']})
 
         myList.append(localDic)
 
@@ -1053,101 +944,6 @@ def get_file():
                 
         # return send_from_directory(r"C:\Users\91798\Desktop\download\templates", filename='ASHISHKUMAR_IT.pdf', as_attachment=True)
         return send_from_directory(dirname, filename=filename, as_attachment=True)
-
-
-def get_status_table():
-    r = []
-    with mysql.connector.connect(**conn_data) as mydb:
-        cur = mydb.cursor()
-        q = "select current_status, status from status_table"
-        cur.execute(q)
-        r = cur.fetchall()
-    return r
-
-def get_exp_status_table():
-    r = []
-    with mysql.connector.connect(**conn_data) as mydb:
-        cur = mydb.cursor()
-        q = "select current_status, status, insurer from exception_status_table"
-        cur.execute(q)
-        r = cur.fetchall()
-    return r
-
-def auto_post():
-    fields = ("runno","insurerid","process","downloadtime","starttime","endtime","emailsubject","date",
-              "fieldreadflag","failedfields","apicalledflag","apiparameter","apiresult","sms","error",
-              "row_no","emailid","completed","file_path","mail_id","hos_id","preauthid","amount","status",
-              "lettertime","policyno","memberid","comment","time_difference","diagno","insname",
-              "doa","dod","corp","polhol","jobid","time_difference2","weightage")
-    with mysql.connector.connect(**conn_data) as con:
-        cur = con.cursor()
-        q = "select * from updation_detail_log WHERE error IS NULL and completed is NULL"
-        ####for test purpose
-        # q = "select * from updation_detail_log_copy WHERE row_no=29928"
-        cur.execute(q)
-        r = cur.fetchall()
-        data = []
-        for row in r:
-            temp = {}
-            for k, v in zip(fields, row):
-                temp[k] = v
-            data.append(temp)
-    for row in data:
-        temp = {}
-        payload = {
-            'memberid': row['memberid'],
-            'preauthid': row['preauthid'],
-            'policyno': row['policyno'],
-            'comment': row['comment']
-        }
-        for i, j in payload.items():
-            if j == None:
-                temp[i] = ''
-            else:
-                temp[i] = j
-        payload = temp
-        url = get_api_url(row['hos_id'], 'getupdateDetailsLog')
-        response = requests.post(url, data=payload)
-        result = response.json()
-        if 'searchdata' in result and 'current_status' in result['searchdata']:
-            row["searchdata"] = result['searchdata']
-            tag_id = ''
-            if 'wait' in row['status']:
-                tag_id = 'Q02'
-            if 'nial' in row['status']:
-                tag_id = 'D05'
-            r = get_status_table()
-            for curs, status in r:
-                if curs in row["searchdata"]["current_status"] and status == row['status']:
-                    requests.post(url_for("postUpdateLog", _external=True),
-                                  data={"row_no": row['row_no'],
-                                        "completed": "A",
-                                        "preauthid": row['preauthid'],
-                                        "amount": row['amount'],
-                                        "status": row['status'],
-                                        "lettertime": row['lettertime'],
-                                        "policyno": row['policyno'],
-                                        "memberid": row['memberid'],
-                                        "comment": row['comment'],
-                                        "tag_id": tag_id,
-                                        "refno": row["searchdata"]['refno']})
-
-            r = get_exp_status_table()
-            for curs, status, insurer in r:
-                if curs in row["searchdata"]["current_status"] and status == row['status'] and insurer == \
-                        row['insurerid']:
-                    requests.post(url_for("postUpdateLog", _external=True),
-                                  data={"row_no": row['row_no'],
-                                        "completed": "A",
-                                        "preauthid": row['preauthid'],
-                                        "amount": row['amount'],
-                                        "status": row['status'],
-                                        "lettertime": row['lettertime'],
-                                        "policyno": row['policyno'],
-                                        "memberid": row['memberid'],
-                                        "comment": row['comment'],
-                                        "tag_id": tag_id,
-                                        "refno": row["searchdata"]['refno']})
 
 
 @app.route('/add', methods=["POST", "GET"])
@@ -2250,7 +2046,7 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
       try:
         if ct == 'settlement':
           with open('logs/letters.log', 'a') as tfp:
-            print(hid, ins, l_time, filepath, sep=',', file=tfp)
+            print(hid, ins, date, filepath, sep=',', file=tfp)
           if 'Intimation No' in subject:
             ins = 'big'
           if 'STAR HEALTH AND ALLIED INSUR04239' in subject:
@@ -2290,6 +2086,25 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
       except Exception as e:
         send_sms(f'exception in {subject}')
         log_exceptions()
+      temp_flag = 0
+      with mysql.connector.connect(**conn_data) as con:
+        cur = con.cursor()
+        q = "select completed from graphApi where date=%s and subject=%s limit 1"
+        data = (l_time, subject)
+        cur.execute(q, data)
+        r = cur.fetchone()
+        if r:
+          flag = r[0]
+          if flag in ['E', 'D']:
+            temp_flag = 1
+      if temp_flag == 1:
+        send_sms(f'error in {subject}')
+        with mysql.connector.connect(**conn_data) as con:
+          cur = con.cursor()
+          q = "update graphApi set completed = 'FF' where date=%s and subject=%s"
+          data = (l_time, subject)
+          cur.execute(q, data)
+          con.commit()
   except:
     log_exceptions()
 
@@ -2919,13 +2734,13 @@ def temp_fun():
 ####for test purpose
 print("Scheduler is called.")
 sched = BackgroundScheduler(daemon=False)
-sched.add_job(auto_post, 'interval', seconds=30, max_instances=1)
 sched.add_job(add1, 'interval', seconds=10, max_instances=1)
 sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
-sched.add_job(insert_sms_mails, 'interval', seconds=120, max_instances=1)
 sched.start()
 ###
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
-    pass
+  # app.run(host="0.0.0.0")
+  app.run(host="0.0.0.0", port=9997)
+  # check_date()
+  # send_sms_text('7709698773', 'abc')
