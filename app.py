@@ -1074,6 +1074,8 @@ def get_exp_status_table():
     return r
 
 def auto_post():
+    r = []
+    api_url = 'http://0.0.0.0:9999/api/postUpdateDetailsLogs'
     fields = ("runno","insurerid","process","downloadtime","starttime","endtime","emailsubject","date",
               "fieldreadflag","failedfields","apicalledflag","apiparameter","apiresult","sms","error",
               "row_no","emailid","completed","file_path","mail_id","hos_id","preauthid","amount","status",
@@ -1086,13 +1088,19 @@ def auto_post():
         # q = "select * from updation_detail_log_copy WHERE row_no=29928"
         cur.execute(q)
         r = cur.fetchall()
-        data = []
-        for row in r:
-            temp = {}
-            for k, v in zip(fields, row):
-                temp[k] = v
-            data.append(temp)
+    data = []
+    for row in r:
+        temp = {}
+        for k, v in zip(fields, row):
+            temp[k] = v
+        data.append(temp)
     for row in data:
+        flag = 'PICKED'
+        with mysql.connector.connect(**conn_data) as mydb:
+            cur = mydb.cursor()
+            q = "insert into auto_post (row_no, flag) values (%s, %s)"
+            cur.execute(q, (row['row_no'], flag))
+            mydb.commit()
         temp = {}
         payload = {
             'memberid': row['memberid'],
@@ -1117,37 +1125,46 @@ def auto_post():
             if 'nial' in row['status']:
                 tag_id = 'D05'
             r = get_status_table()
+            r1 = get_exp_status_table()
             for curs, status in r:
                 if curs in row["searchdata"]["current_status"] and status == row['status']:
-                    requests.post(url_for("postUpdateLog", _external=True),
-                                  data={"row_no": row['row_no'],
-                                        "completed": "A",
-                                        "preauthid": row['preauthid'],
-                                        "amount": row['amount'],
-                                        "status": row['status'],
-                                        "lettertime": row['lettertime'],
-                                        "policyno": row['policyno'],
-                                        "memberid": row['memberid'],
-                                        "comment": row['comment'],
-                                        "tag_id": tag_id,
-                                        "refno": row["searchdata"]['refno']})
 
-            r = get_exp_status_table()
-            for curs, status, insurer in r:
-                if curs in row["searchdata"]["current_status"] and status == row['status'] and insurer == \
-                        row['insurerid']:
-                    requests.post(url_for("postUpdateLog", _external=True),
-                                  data={"row_no": row['row_no'],
-                                        "completed": "A",
-                                        "preauthid": row['preauthid'],
-                                        "amount": row['amount'],
-                                        "status": row['status'],
-                                        "lettertime": row['lettertime'],
-                                        "policyno": row['policyno'],
-                                        "memberid": row['memberid'],
-                                        "comment": row['comment'],
-                                        "tag_id": tag_id,
-                                        "refno": row["searchdata"]['refno']})
+                    for curs1, status1, insurer1 in r1:
+                        if curs1 in row["searchdata"]["current_status"] and status1 == row['status'] and insurer1 == \
+                                row['insurerid']:
+                            flag = 'EXP_STATUS_CONDITION_MATCH'
+                            with mysql.connector.connect(**conn_data) as mydb:
+                                cur = mydb.cursor()
+                                q = "update auto_post set flag=%s where row_no=%s"
+                                cur.execute(q, (flag, row['row_no']))
+                                mydb.commit()
+
+                    if flag != 'EXP_STATUS_CONDITION_MATCH':
+                        flag = 'STATUS_CONDITION_MATCH'
+                        with mysql.connector.connect(**conn_data) as mydb:
+                            cur = mydb.cursor()
+                            q = "update auto_post set flag=%s where row_no=%s"
+                            cur.execute(q, (flag, row['row_no']))
+                            mydb.commit()
+                        tmp = requests.post(api_url,
+                                      data={"row_no": row['row_no'],
+                                            "completed": "A",
+                                            "preauthid": row['preauthid'],
+                                            "amount": row['amount'],
+                                            "status": row['status'],
+                                            "lettertime": row['lettertime'],
+                                            "policyno": row['policyno'],
+                                            "memberid": row['memberid'],
+                                            "comment": row['comment'],
+                                            "tag_id": tag_id,
+                                            "refno": row["searchdata"]['refno']})
+                        if tmp.status_code == 200:
+                            flag = 'AUTO_POST'
+                            with mysql.connector.connect(**conn_data) as mydb:
+                                cur = mydb.cursor()
+                                q = "update auto_post set flag=%s where row_no=%s"
+                                cur.execute(q, (flag, row['row_no']))
+                                mydb.commit()
 
 
 @app.route('/add', methods=["POST", "GET"])
@@ -2928,4 +2945,5 @@ sched.start()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
+    # auto_post()
     pass
