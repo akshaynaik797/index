@@ -120,8 +120,8 @@ def process_p_flag_mails():
                          mail_id])
                     with mysql.connector.connect(**conn_data) as con:
                         cur = con.cursor()
-                        q = f"update {hosp} set process='classification' where id=%s"
-                        cur.execute(q, (mail_id,))
+                        q = f"update {hosp} set process='classification', classification_time=%s where id=%s"
+                        cur.execute(q, (mail_id, str(datetime.now())))
                         con.commit()
                         with open('logs/process_p_flag_mails.log', 'a') as tfp:
                             print(str(datetime.now()), cur.statement, sep=',', file=tfp)
