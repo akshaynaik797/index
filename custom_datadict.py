@@ -19,7 +19,8 @@ preid_reg_list = [r"(?<=Claim Number).*(?=\(0)", r"(?<=Claim Number).*", r"(?<=P
                   r"(?<=SHORTFALL No\.).*(?=-)", r"(?<=SHORTFALL No.).*", r"(?<=Claim).*",
                   r"(?<=Claim No:).*(?=\(Please)", r"(?<=Claim Control Number).*", r"(?<=PA.No).*"]
 
-pname_reg_list = [r"(?<=Patient Name).*(?=Age)", r"(?<=Patient Name).*", r"(?<=Name of Insured Patient).*(?=Age)",
+pname_reg_list = [r"(?<=Patient Name).*(?=Age)", r"(?<=PATIENT NAME AND RELATION\n).*?(?=-)",
+                  r"(?<=Patient Name).*", r"(?<=Name of Insured Patient).*(?=Age)",
                   r"(?<=Name of Insured-).*(?=Age)", r"(?<=Name Of Patient).*(?=AL)", r"(?<=Patient Name =:).*",
                   r"(?<=Name of Patient).*(?=Membership)", r"(?<=Patient Nam e).*(?=, Age)",
                   r"(?<=Patient Name).*(?=Patient)", r"(?<=Patient's Name).*", r"(?<=hospitalization of).*(?=with)",
@@ -35,7 +36,7 @@ pname_reg_list = [r"(?<=Patient Name).*(?=Age)", r"(?<=Patient Name).*", r"(?<=N
                   r"(?<=information required for cashless claim facility for).*(?=at)", r"(?<=Patient Name).*(?=Policy No:)",
                   r"(?<=Patient Name).*(?=Hospitalized at)", r"[\w ]+\n(?=Patient)", r"(?<=Patient Name).*(?=\()",
                   r"(?<=regarding Hospitalization of).*(?=with claim no)", r"(?<=Patient).*(?=to hospital.)",
-                  r"(?<=Name of the patient).*(?=UHID)"]
+                  r"(?<=Name of the patient).*(?=UHID)", r"(?<=for the treatment of\n).*?(?=in)",]
 
 polno_reg_list = [r"(?<=Policy No).*", r"(?<=Policy Number).*(?=Room)", r"(?<=Policy Number).*(?=Policy)",
                   r"(?<=Policy Number).*(?=Expected)", r"(?<=Policy Number).*", r"(?<=Policy No).*(?=Date)",

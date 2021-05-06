@@ -28,13 +28,13 @@ try:
     if 'Additional information' in f:
         status = 'Information Awaiting'
 
-    preid_reg_list = [r"", r"(?<=Claim Number).*(?=\()"]
+    preid_reg_list = [r"", r"(?<=Claim Number).*(?=\()", r"(?<=Pre Authorization number).*"]
 
-    pname_reg_list = [r"", r"(?<=Patient Name).*(?=Age)"]
+    pname_reg_list = [r"", r"(?<=Patient Name).*(?=Age)", r"(?<=Patient Name).*(?=Branch)"]
 
-    polno_reg_list = [r"", r"(?<=Policy Number).*(?=Gender)"]
+    polno_reg_list = [r"", r"(?<=Policy Number).*(?=Gender)", r"(?<=Policy Number).*"]
 
-    memid_reg_list = [r"", r"(?<=Insurer Id of the Patient).*"]
+    memid_reg_list = [r"", r"(?<=Insurer Id of the Patient).*", r"(?<=Member ID Number).*"]
 
     amount_reg_list = [r"", r"(?<=Total Authorized amount).*(?=\()"]
 

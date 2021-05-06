@@ -3,9 +3,9 @@ import subprocess
 import mysql.connector
 from custom_parallel import conn_data
 def run():
-    ins = "health_heritage"
-    ct = "preauth"
-    fpath = "/home/akshay/temp/4033_PreAuthAppLetter_HH222106267_24032021190527.pdf"
+    ins = "Paramount"
+    ct = "query"
+    fpath = "/home/akshay/temp/36139714_.pdf"
     subject = "Cashless Claim settlement Letter: Patient Name: Chaya Bhanushali, Member ID: 1004055040, Pre-auth no: 21012700613, Policy No. 1240284300"
     l_time = "07/12/2020 18:22:25"
     hid = "noble"
@@ -108,6 +108,6 @@ def get_ins_process(subject, email):
     return ins, process
 
 if __name__ == "__main__":
-    a = get_ins_process('Cashless Enhancement of Patient Name : Suresh Gorawade  (Father) Employee Name :Ravi Suresh Gorawade    (Emp ID : 10083327)', 'donotreply@fhpl.net')
+    # a = get_ins_process('Cashless Enhancement of Patient Name : Suresh Gorawade  (Father) Employee Name :Ravi Suresh Gorawade    (Emp ID : 10083327)', 'donotreply@fhpl.net')
     run()
     pass
