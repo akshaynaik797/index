@@ -3,9 +3,9 @@ import subprocess
 import mysql.connector
 from custom_parallel import conn_data
 def run():
-    ins = "icici_lombard"
-    ct = "query"
-    fpath = "/home/akshay/temp/45494305_.pdf"
+    ins = "Max_Bupa"
+    ct = "ack"
+    fpath = "/home/akshay/temp/6036_CAACKRLTR01_AcknowledgmentofReceiptLetter_VP00269_P2021050711-35-25.pdf"
     subject = "Cashless Claim settlement Letter: Patient Name: Chaya Bhanushali, Member ID: 1004055040, Pre-auth no: 21012700613, Policy No. 1240284300"
     l_time = "07/12/2020 18:22:25"
     hid = "noble"
