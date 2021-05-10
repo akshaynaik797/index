@@ -1634,8 +1634,6 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
             if 'body.pdf' in fp:
                 break
             if bool(fp):
-                if (fp.find('MDI') != -1) and (fp.find('Query') == -1):
-                    continue
                 if (fp.find('KYC') != -1):
                     continue
                 if (fp.find('image') != -1):
