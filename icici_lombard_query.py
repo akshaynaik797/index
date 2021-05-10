@@ -19,6 +19,7 @@ with open('icici_lombard/output.txt', 'w') as f:
 with open('icici_lombard/output.txt', 'r') as myfile:
     f = myfile.read()
 try:
+    f = f.replace('Â', '')
     datadict = make_datadict(f)
     datadict['preid'] = datadict['preid'].split('-')[0]
     data = [i for i in sys.argv[1:]]
