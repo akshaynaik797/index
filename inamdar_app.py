@@ -2459,14 +2459,14 @@ sched.add_job(process_p_flag_mails, 'interval', seconds=300, max_instances=1)
 sched.add_job(inamdar, 'interval', seconds=int(formparameter['interval']), args=[formparameter], max_instances=1)
 sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
               max_instances=1)
-sched.add_job(ils, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-              max_instances=1)
-sched.add_job(ils_dumdum, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-              max_instances=1)
-sched.add_job(ils_agartala, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-              max_instances=1)
-sched.add_job(ils_howrah, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-              max_instances=1)
+# sched.add_job(ils, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
+#               max_instances=1)
+# sched.add_job(ils_dumdum, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
+#               max_instances=1)
+# sched.add_job(ils_agartala, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
+#               max_instances=1)
+# sched.add_job(ils_howrah, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
+#               max_instances=1)
 sched.start()
 
 
