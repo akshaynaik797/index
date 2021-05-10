@@ -1,4 +1,5 @@
 import datetime
+import re
 import sys
 
 import pdftotext
@@ -20,6 +21,9 @@ with open('fhpl/output.txt', 'r') as myfile:
     f = myfile.read()
 try:
     datadict = make_datadict(f)
+    if datadict['pname'] == '':
+        if tmp := re.search(r"(?<=Patient's Name\n).*?(?=\n *PinCode)", f):
+            datadict['pname'] = tmp.group().strip()
     data = [i for i in sys.argv[1:]]
     data2 = [datadict[i] for i in datadict]
     data.extend(data2)

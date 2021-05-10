@@ -128,7 +128,7 @@ def make_datadict(text_from_file):
     datadict = {}
     try:
         regexdict = {'preid': [preid_reg_list, preid_val, [':', '.', '(', ')', 'and']],
-                     'pname': [pname_reg_list, pname_val, ['-', ':', 'MR.', 'Mr.', ',', 'B/O', '—']],
+                     'pname': [pname_reg_list, pname_val, ['-', ':', 'MR.', 'Mr.', ',', 'B/O', '—', 'Age']],
                      'polno': [polno_reg_list, polno_val, [':', '.', '-', '(', ')']],
                      'memid': [memid_reg_list, memid_val, [':', '-']],
                      'amount': [amount_reg_list, amount_val, ['(Rs)', '-', ':', 'Rs.', '/', ',', 'Rs', '(INR)']],
