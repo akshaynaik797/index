@@ -1559,6 +1559,12 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
                                 print(subject)
                             else:
                                 print(subject, "=", subject_result)
+                                with mysql.connector.connect(**conn_data) as con:
+                                    cur = con.cursor()
+                                    q1 = f"update {hid}_mails set completed = 'SNM' where sno = %s;"
+                                    data = (i[7],)
+                                    cur.execute(q1, data)
+                                    con.commit()
 
                                 # NEED to raise error subject not known
                                 # subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
@@ -2459,6 +2465,9 @@ sched.add_job(process_p_flag_mails, 'interval', seconds=300, max_instances=1)
 sched.add_job(inamdar, 'interval', seconds=int(formparameter['interval']), args=[formparameter], max_instances=1)
 sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
               max_instances=1)
+
+
+
 # sched.add_job(ils, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
 #               max_instances=1)
 # sched.add_job(ils_dumdum, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
@@ -2467,11 +2476,14 @@ sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[f
 #               max_instances=1)
 # sched.add_job(ils_howrah, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
 #               max_instances=1)
+
 sched.start()
 
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0")
-    app.run(host="0.0.0.0", port=9992)
+    noble(formparameter)
+    # app.run(host="0.0.0.0", port=9992)
     # process_copy_test()
     # temp_fun()
+    pass
