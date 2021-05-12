@@ -1762,8 +1762,8 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
                     try:
                         with mysql.connector.connect(**conn_data) as con:
                             cur = con.cursor()
-                            q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                            data = (mail_id, subject, l_time, str(datetime.datetime.now()), filepath, '', sender, hid)
+                            q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`, `folder`, `process`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                            data = (mail_id, subject, l_time, str(datetime.datetime.now()), filepath, '', sender, hid, 'INBOX', 'index')
                             cur.execute(q, data)
                             q1 = f"update {hid}_mails set completed = 'S' where date = %s and subject=%s;"
                             data1 = (l_time, subject)

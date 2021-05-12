@@ -100,9 +100,10 @@ def create_settlement_folder(hosp, ins, date, filepath):
         dst = os.path.join(folder, os.path.split(filepath)[-1])
         Path(folder).mkdir(parents=True, exist_ok=True)
         copyfile(filepath, dst)
+        return os.path.abspath(dst)
     except:
         log_exceptions(hosp=hosp, ins=ins, date=date, filepath=filepath)
-    return os.path.abspath(dst)
+        return ""
 
 def get_api_url(hosp, process):
     api_conn_data = {'host': "iclaimdev.caq5osti8c47.ap-south-1.rds.amazonaws.com",
