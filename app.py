@@ -674,8 +674,6 @@ def postUpdateLog():
         r = cur.fetchone()
         if r:
           r = r[0]
-          ####for test purpose
-          r = "/home/akshay/temp/5279_24306630.pdf"
         else:
           r = ''
 
@@ -1110,8 +1108,6 @@ def auto_post():
     with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
         q = "select * from updation_detail_log WHERE error IS NULL and completed is NULL"
-        ####for test purpose
-        # q = "select * from updation_detail_log_copy WHERE row_no=29928"
         cur.execute(q)
         r = cur.fetchall()
     data = []
@@ -2960,14 +2956,14 @@ def temp_fun():
     #       pass
 
 ####for test purpose
-# print("Scheduler is called.")
-# sched = BackgroundScheduler(daemon=False)
-# sched.add_job(auto_post, 'interval', seconds=30, max_instances=1)
-# sched.add_job(add1, 'interval', seconds=10, max_instances=1)
-# sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
-# sched.add_job(insert_sms_mails, 'interval', seconds=120, max_instances=1)
-# sched.start()
-###
+print("Scheduler is called.")
+sched = BackgroundScheduler(daemon=False)
+sched.add_job(auto_post, 'interval', seconds=30, max_instances=1)
+sched.add_job(add1, 'interval', seconds=10, max_instances=1)
+sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
+sched.add_job(insert_sms_mails, 'interval', seconds=120, max_instances=1)
+sched.start()
+##
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
