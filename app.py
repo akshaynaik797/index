@@ -461,6 +461,7 @@ def testpostapi():
 
 @app.route("/api/postUpdateDetailsLogs", methods=["POST"])
 def postUpdateLog():
+    # process, insid, hosid, comment, admission_date,dischargedate
   weightage = {
     'preauthid' : 0.55,
     'amount' : 0.15,
@@ -469,6 +470,7 @@ def postUpdateLog():
     'memberid' : 0.05,
     'comment' : 0.10,
   }
+  process, insid, hosid, comment, admission_date, dischargedate = "", "", "", "", "", ""
   preauthid = ''
   amount = ''
   status = ''
@@ -510,7 +512,8 @@ def postUpdateLog():
 
   with mysql.connector.connect(**conn_data) as con:
     cur = con.cursor()
-    q = f'select preauthid,amount,status,process,lettertime,policyno,memberid,hos_id, comment,endtime from updation_detail_log where row_no={row_no}'
+    # process, insid, hosid, comment, admission_date,dischargedate
+    q = f'select preauthid,amount,status,process,lettertime,policyno,memberid,hos_id, comment,endtime,insurerid,doa,dod from updation_detail_log where row_no={row_no}'
     print(q)
     log_api_data('q', q)
     cur.execute(q)
@@ -541,6 +544,20 @@ def postUpdateLog():
     tagid = request.form['tag_id']
   if request.form.get('refno') != None:
     refno = request.form['refno']
+
+    if request.form.get('insid') != None:
+        insid = request.form['insid']
+    if request.form.get('hosid') != None:
+        hosid = request.form['hosid']
+    if request.form.get('admission_date') != None:
+        admission_date = request.form['admission_date']
+    if request.form.get('dischargedate') != None:
+        dischargedate = request.form['dischargedate']
+    if request.form.get('process') != None:
+        process = request.form['process']
+
+    # process, insid, hosid, comment, admission_date,dischargedate
+
   try:
     time_diff2 = datetime.datetime.now() - datetime.datetime.strptime(r[9].split('.')[0], '%Y-%m-%d %H:%M:%S')
     time_diff2 = time_diff2.total_seconds()
@@ -630,6 +647,8 @@ def postUpdateLog():
       query = query + " memberid='%s'" % memberid
       flag = 1
 
+    # process, insid, hosid, comment, admission_date,dischargedate
+
     if len(query) > len("update updation_detail_log set"):
       # query=query+", completed='X'"
       query = query + " where row_no=%s" % row_no
@@ -655,6 +674,8 @@ def postUpdateLog():
         r = cur.fetchone()
         if r:
           r = r[0]
+          ####for test purpose
+          r = "/home/akshay/temp/5279_24306630.pdf"
         else:
           r = ''
 
@@ -676,7 +697,7 @@ def postUpdateLog():
           # 'pname': sys.argv[10],
           'amount': amount,
           'status': status,
-          'process': '',
+          'process': process,
           'lettertime': lettertime,
           'policyno': policyno,
           'memberid': memberid,
@@ -684,8 +705,13 @@ def postUpdateLog():
           'tagid': tagid,
           'comment': comment,
           'refno': refno,
+            'insid': insid,
+            'hosid': hosid,
+            'admission_date': admission_date,
+            'dischargedate': dischargedate,
         }
 
+        # process, insid, hosid, comment, admission_date,dischargedate
         r = requests.post(url=API_ENDPOINT, data=data, files=files)
         print(data)
         log_api_data('data', data)
@@ -2934,13 +2960,13 @@ def temp_fun():
     #       pass
 
 ####for test purpose
-print("Scheduler is called.")
-sched = BackgroundScheduler(daemon=False)
-sched.add_job(auto_post, 'interval', seconds=30, max_instances=1)
-sched.add_job(add1, 'interval', seconds=10, max_instances=1)
-sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
-sched.add_job(insert_sms_mails, 'interval', seconds=120, max_instances=1)
-sched.start()
+# print("Scheduler is called.")
+# sched = BackgroundScheduler(daemon=False)
+# sched.add_job(auto_post, 'interval', seconds=30, max_instances=1)
+# sched.add_job(add1, 'interval', seconds=10, max_instances=1)
+# sched.add_job(check_date, 'interval', seconds=300, max_instances=1)
+# sched.add_job(insert_sms_mails, 'interval', seconds=120, max_instances=1)
+# sched.start()
 ###
 
 if __name__ == '__main__':
