@@ -22,6 +22,7 @@ with open('fhpl/output1.txt', 'r') as myfile:
 
 try:
     datadict = make_datadict(f)
+    datadict['preid'] = datadict['preid'].split('/')[0]
     data = [i for i in sys.argv[1:]]
     data2 = [datadict[i] for i in datadict]
     data.extend(data2)
