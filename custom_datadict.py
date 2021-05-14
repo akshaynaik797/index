@@ -7,7 +7,7 @@ preid_reg_list = [r"(?<=Claim Number).*(?=\(0)", r"(?<=Claim Number).*", r"(?<=P
                   r"(?<=Preauthorization Num ber).*(?=,)", r"(?<=Claim ID).*(?=UHID)", r"(?<=Claim ID).*",
                   r"(?<=CCN).*", r"(?<=Claim Number).*", r"(?<=claim no)\s+\S+",
                   r"(?<=AL Number).*", r"(?<=cashless request ID).*?(?=dated)", r"(?<=Preauth ID).*",
-                  r"(?<=Incidence no).*", r"(?<=Cashless Authorization no).*(?=under Policy)", r"(?<=Customer ID).*",
+                  r"(?<=Incidence no).*", r"(?<=Cashless Authorization no).*(?=under Policy)",
                   r"(?<=CCN Number).*", r"(?<=File No.).*", r"(?<=CLAIM NUMBER).*", r"(?<=FIR NO).*", r"(?<=AL No).*",
                   r"(?<=Claim Number AL).*(?=\()", r"(?<=Claim no).*(?=\()", r"(?<=UHC CASE ID).*",
                   r"(?<=Claim Registration Number).*", r"(?<=Claim Number).*(?=Date)", r"(?<=Preauth ID).*",
