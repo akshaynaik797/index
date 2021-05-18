@@ -209,6 +209,11 @@ def insert_sms_mails():
         cur.execute(q)
         result = cur.fetchall()
         for table, hosp in result:
+            q = f"select * from {table} where completed=''"
+            cur.execute(q)
+            r1 = cur.fetchall()
+            if len(r1) != 0:
+                continue
             q = f"select subject, date, completed, attach_path, sno, sender from {table} where completed not in ('p', 'X', '', 'S', 'pp') order by sno desc limit {last_rows}"
             cur.execute(q)
             r1 = cur.fetchall()
@@ -1117,76 +1122,79 @@ def auto_post():
             temp[k] = v
         data.append(temp)
     for row in data:
-        flag = 'PICKED'
-        with mysql.connector.connect(**conn_data) as mydb:
-            cur = mydb.cursor()
-            q = "insert into auto_post (row_no, flag) values (%s, %s)"
-            cur.execute(q, (row['row_no'], flag))
-            mydb.commit()
-        temp = {}
-        payload = {
-            'memberid': row['memberid'],
-            'preauthid': row['preauthid'],
-            'policyno': row['policyno'],
-            'comment': row['comment']
-        }
-        for i, j in payload.items():
-            if j == None:
-                temp[i] = ''
-            else:
-                temp[i] = j
-        payload = temp
-        url = get_api_url(row['hos_id'], 'getupdateDetailsLog')
-        response = requests.post(url, data=payload)
-        result = response.json()
-        if 'searchdata' in result and 'current_status' in result['searchdata']:
-            row["searchdata"] = result['searchdata']
-            tag_id = ''
-            if 'wait' in row['status']:
-                tag_id = 'Q02'
-            if 'nial' in row['status']:
-                tag_id = 'D05'
-            r = get_status_table()
-            r1 = get_exp_status_table()
-            for curs, status in r:
-                if curs in row["searchdata"]["current_status"] and status == row['status']:
+        try:
+            flag = 'PICKED'
+            with mysql.connector.connect(**conn_data) as mydb:
+                cur = mydb.cursor()
+                q = "insert into auto_post (row_no, flag) values (%s, %s)"
+                cur.execute(q, (row['row_no'], flag))
+                mydb.commit()
+            temp = {}
+            payload = {
+                'memberid': row['memberid'],
+                'preauthid': row['preauthid'],
+                'policyno': row['policyno'],
+                'comment': row['comment']
+            }
+            for i, j in payload.items():
+                if j == None:
+                    temp[i] = ''
+                else:
+                    temp[i] = j
+            payload = temp
+            url = get_api_url(row['hos_id'], 'getupdateDetailsLog')
+            response = requests.post(url, data=payload)
+            result = response.json()
+            if 'searchdata' in result and 'current_status' in result['searchdata']:
+                row["searchdata"] = result['searchdata']
+                tag_id = ''
+                if 'wait' in row['status']:
+                    tag_id = 'Q02'
+                if 'nial' in row['status']:
+                    tag_id = 'D05'
+                r = get_status_table()
+                r1 = get_exp_status_table()
+                for curs, status in r:
+                    if curs in row["searchdata"]["current_status"] and status == row['status']:
 
-                    for curs1, status1, insurer1 in r1:
-                        if curs1 in row["searchdata"]["current_status"] and status1 == row['status'] and insurer1 == \
-                                row['insurerid']:
-                            flag = 'EXP_STATUS_CONDITION_MATCH'
+                        for curs1, status1, insurer1 in r1:
+                            if curs1 in row["searchdata"]["current_status"] and status1 == row['status'] and insurer1 == \
+                                    row['insurerid']:
+                                flag = 'EXP_STATUS_CONDITION_MATCH'
+                                with mysql.connector.connect(**conn_data) as mydb:
+                                    cur = mydb.cursor()
+                                    q = "update auto_post set flag=%s where row_no=%s"
+                                    cur.execute(q, (flag, row['row_no']))
+                                    mydb.commit()
+
+                        if flag != 'EXP_STATUS_CONDITION_MATCH':
+                            flag = 'STATUS_CONDITION_MATCH'
                             with mysql.connector.connect(**conn_data) as mydb:
                                 cur = mydb.cursor()
                                 q = "update auto_post set flag=%s where row_no=%s"
                                 cur.execute(q, (flag, row['row_no']))
                                 mydb.commit()
-
-                    if flag != 'EXP_STATUS_CONDITION_MATCH':
-                        flag = 'STATUS_CONDITION_MATCH'
-                        with mysql.connector.connect(**conn_data) as mydb:
-                            cur = mydb.cursor()
-                            q = "update auto_post set flag=%s where row_no=%s"
-                            cur.execute(q, (flag, row['row_no']))
-                            mydb.commit()
-                        tmp = requests.post(api_url,
-                                      data={"row_no": row['row_no'],
-                                            "completed": "A",
-                                            "preauthid": row['preauthid'],
-                                            "amount": row['amount'],
-                                            "status": row['status'],
-                                            "lettertime": row['lettertime'],
-                                            "policyno": row['policyno'],
-                                            "memberid": row['memberid'],
-                                            "comment": row['comment'],
-                                            "tag_id": tag_id,
-                                            "refno": row["searchdata"]['refno']})
-                        if tmp.status_code == 200:
-                            flag = 'AUTO_POST'
-                            with mysql.connector.connect(**conn_data) as mydb:
-                                cur = mydb.cursor()
-                                q = "update auto_post set flag=%s where row_no=%s"
-                                cur.execute(q, (flag, row['row_no']))
-                                mydb.commit()
+                            tmp = requests.post(api_url,
+                                          data={"row_no": row['row_no'],
+                                                "completed": "A",
+                                                "preauthid": row['preauthid'],
+                                                "amount": row['amount'],
+                                                "status": row['status'],
+                                                "lettertime": row['lettertime'],
+                                                "policyno": row['policyno'],
+                                                "memberid": row['memberid'],
+                                                "comment": row['comment'],
+                                                "tag_id": tag_id,
+                                                "refno": row["searchdata"]['refno']})
+                            if tmp.status_code == 200:
+                                flag = 'AUTO_POST'
+                                with mysql.connector.connect(**conn_data) as mydb:
+                                    cur = mydb.cursor()
+                                    q = "update auto_post set flag=%s where row_no=%s"
+                                    cur.execute(q, (flag, row['row_no']))
+                                    mydb.commit()
+        except:
+            log_exceptions(row=row, msg='autopost')
 
 
 @app.route('/add', methods=["POST", "GET"])
@@ -2338,120 +2346,6 @@ def run_ins(ins, ct, filepath, subject, l_time, hid, mail_id):
          mail_id])
 
 
-def download_html_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, files, mail_id, sender):
-  now = datetime.datetime.now()
-  # wbkName = 'log file.xlsx'
-  subprocess.run(["python", "foldercheck.py", (ins + '/attachments_' + ct)])
-  dirFiles = os.listdir(ins + '/attachments_' + ct)
-  detach_dir = (os.getcwd() + '/' + ins + '/attachments_' + ct + '/')
-  dirFiles.sort(key=lambda l: int(re.sub('\D', '', l)))
-  # print(dirFiles[-1])
-  if (len(dirFiles) > 0):
-    m = dirFiles[-1].find('.')
-    b = int(dirFiles[-1][:m])
-  else:
-    b = 0
-  b += 1
-  # print(b)
-  token = _get_token_from_cache(app_config.SCOPE)
-  getmail = f"https://graph.microsoft.com/v1.0/me/messages/{mail_id}"
-  data = requests.get(getmail, headers={'Authorization': 'Bearer ' + token['access_token'],
-                                          "Prefer": "odata.track-changes",
-                                          },
-                      ).json()
-
-  with open(ins + '/email.html', 'w') as tempf:
-    tempf.write(data['body']['content'])
-  try:
-    pdfkit.from_file(ins + '/email.html', ins + '/attachments_' + ct + '/' + str(b) + '.pdf', configuration=config)
-  except Exception as e:
-    log_exceptions()
-    pass
-
-  # for mail.part in mail.email_message.walk():
-  #   if mail.part.get_content_type() == "text/html" or mail.part.get_content_type() == "text/plain":
-  #     mail.body = mail.part.get_payload(decode=True)
-  #     mail.file_name = ins + '/email.html'
-  #     mail.output_file = open(mail.file_name, 'w')
-  #     try:
-  #       mail.output_file.write("Body: %s" % (mail.body.decode('utf-8')))
-  #     except Exception as e:
-  #       log_exceptions()
-  #       continue
-  #
-  #     mail.output_file.close()
-  #     try:
-  #       pdfkit.from_file(ins + '/email.html', ins + '/attachments_' + ct + '/' + str(b) + '.pdf', configuration=config)
-  #     except Exception as e:
-  #       log_exceptions()
-  #       pass
-  #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
-  filePath = os.path.join(detach_dir, str(b) + '.pdf')
-  # print(mail.email_message['Date'])
-  '''
-  l_time=mail.email_message['Date']
-  l_time = ifutc_to_indian(l_time)
-  w=l_time.find(',')+1
-  g=l_time[w:]
-  u=g.find('+')+w
-  s=l_time[w:u]
-  s=s.split(' ')
-  while("" in s) :
-      s.remove("")
-  # print(s)
-  if(len(s)==4):
-    t=s[0]+' '+s[1]+' '+s[2]+' '+s[3]
-
-    d = datetime.datetime.strptime(t, '%d %b %Y %H:%M:%S')
-    l_time=d.strftime('%d/%m/%Y %H:%M:%S')
-  else:
-    l_time=mail.email_message['Date']
-    l_time = date_parser.parse(ifutc_to_indian(l_time)).strftime('%d/%m/%Y %H:%M:%S')
-    # l_time = ifutc_to_indian(l_time)
-    '''
-  try:
-    if (ct == 'settlement'):
-      #varun sir
-      return 1
-      start_date = datetime.date.today().strftime("%d-%b-%Y")
-      end_date = datetime.date.today().strftime("%d-%b-%Y")
-      uid = mail.latest_email_id.decode()
-      #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
-      now = datetime.datetime.now()
-      #subprocess.run(["python", "updation.py", "2", "max", "4", str(now)])
-      #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-      #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-      #subprocess.run(["python", "updation.py", "2", "max", "17", str(mail.email_message['From'])])
-      subprocess.run(["python", "main.py", start_date, end_date, ins, hid, uid, subject])
-    else:
-      fp2 = open(ins + "_" + ct + ".py", "r")
-      fp2.close()
-      try:
-        subprocess.run(
-          ["python", ins + "_" + ct + ".py", ins + '/attachments_' + ct + '/' + str(b) + '.pdf', str(row_count_1), ins,
-           ct, subject, l_time, hid, mail_id])
-      except:
-        log_exceptions()
-  except Exception as e:
-    log_exceptions()
-    #subprocess.run(["python", "updation.py", "0", "max", "11", str(row_count_1)])
-    # wbk.save(wbkName)
-    s_r += 1
-    #subprocess.run(["python", "updation.py", "1", "max1", "1", str(row_count_1)])
-    #subprocess.run(["python", "updation.py", "1", "max", "2", str(ins)])
-    #subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
-    #subprocess.run(["python", "updation.py", "2", "max", "8", l_time])
-    #subprocess.run(["python", "updation.py", "2", "max", "7", subject])
-    #subprocess.run(["python", "updation.py", "1", "max", "15", 'python file doesnot exist- ' + ins + '_' + ct + '.py'])
-    # print(e)
-  #subprocess.run(["python", "updation.py", "1", "max", "19", filePath])
-  #subprocess.run(["python", "updation.py", "1", "max", "20", mail_id])
-  #subprocess.run(["python", "updation.py", "1", "max", "21", hid])
-  #subprocess.run(["python", "updation.py", "1", "max", "3", str(ct)])
-  s_r = s_r + 1
-
-  #subprocess.run(["python", "updation.py", "1", "max", "4", str(now)])
-  add_time_diff()
 
 
 
@@ -2967,5 +2861,4 @@ sched.start()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
-    # auto_post()
     pass
