@@ -48,7 +48,8 @@ from make_log import log_exceptions, log_data, custom_log_data
 from cust_time_functs import ifutc_to_indian, time_fun_two
 from city_api import get_from_db
 from update_detail_api import get_update_log
-from custom_app import check_if_sub_and_ltime_exist, get_fp_seq, create_settlement_folder
+from custom_app import check_if_sub_and_ltime_exist, get_fp_seq, create_settlement_folder, \
+    change_active_flag_mail_storage_tables
 from custom_parallel import conn_data
 from sms_alerts import send_sms
 from process_p_flag import process_p_flag_mails
@@ -1438,6 +1439,7 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
         # today = today.strftime('%d-%b-%Y')
         mail = ""
         #
+        change_active_flag_mail_storage_tables(hospital=hid, flag=0)
         print(hid, 'in process copy ', len(result), today, row_count_1)
         result_cnt, processed_cnt = len(result), 0
         for j, i in enumerate(result):
@@ -1610,6 +1612,7 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
                         # subprocess.run(["python", "updation.py", "1", "max", "21", hid])
             except:
                 log_exceptions()
+        change_active_flag_mail_storage_tables(hospital=hid, flag=1)
         custom_log_data(filename=f"{hid}_process_copy_stats", result_cnt=result_cnt, processed_cnt=processed_cnt)
 
         fo = open("defualt_time_read.txt", "a+")
@@ -2463,8 +2466,7 @@ formparameter['nowtime'] = ''
 sched = BackgroundScheduler(daemon=False)
 sched.add_job(process_p_flag_mails, 'interval', seconds=300, max_instances=1)
 sched.add_job(inamdar, 'interval', seconds=int(formparameter['interval']), args=[formparameter], max_instances=1)
-sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-              max_instances=1)
+sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[formparameter], max_instances=1)
 
 
 
@@ -2477,13 +2479,8 @@ sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[f
 # sched.add_job(ils_howrah, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
 #               max_instances=1)
 
-sched.start()
-
-
 if __name__ == '__main__':
-    # app.run(host="0.0.0.0")
-    noble(formparameter)
+    # noble(formparameter)
     # app.run(host="0.0.0.0", port=9992)
-    # process_copy_test()
-    # temp_fun()
+    sched.start()
     pass

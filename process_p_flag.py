@@ -6,6 +6,7 @@ import mysql.connector
 import pandas as pd
 import pdftotext
 
+from custom_app import change_active_flag_mail_storage_tables
 from custom_parallel import conn_data
 from make_log import log_exceptions
 
@@ -91,6 +92,7 @@ def process_p_flag_mails():
                 records.append(t)
             mails_dict[table] = records
     for hosp in mails_dict:
+        change_active_flag_mail_storage_tables(table_name=hosp, flag=0)
         for row in mails_dict[hosp]:
             try:
                 with mysql.connector.connect(**conn_data) as con:
@@ -127,6 +129,8 @@ def process_p_flag_mails():
                             print(str(datetime.now()), cur.statement, sep=',', file=tfp)
             except:
                 log_exceptions(row=row)
+        change_active_flag_mail_storage_tables(table_name=hosp, flag=1)
+
 
 if __name__ == '__main__':
     process_p_flag_mails()

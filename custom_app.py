@@ -119,5 +119,18 @@ def get_api_url(hosp, process):
             return result[0]
     return ''
 
+def change_active_flag_mail_storage_tables(**kwargs):
+    q, params = "", []
+    if 'hospital' in kwargs:
+        q = 'update mail_storage_tables set active=%s where hospital=%s'
+        params = [kwargs['flag'], kwargs['hospital']]
+    if 'table_name' in kwargs:
+        q = 'update mail_storage_tables set active=%s where table_name=%s'
+        params = [kwargs['flag'], kwargs['table_name']]
+    with mysql.connector.connect(**conn_data) as con:
+        cur = con.cursor()
+        cur.execute(q, params)
+        con.commit()
+
 if __name__ == "__main__":
-    set_flag_graphapi('Welcome', '19/12/2020 13:17:22', 'sample')
+    change_active_flag_mail_storage_tables(table_name="noble_mails", flag=1)
