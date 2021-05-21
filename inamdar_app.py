@@ -1456,20 +1456,20 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
                     data = (i[2],)
                     cur.execute(q1, data)
                     con.commit()
-                # with mysql.connector.connect(**conn_data) as con:
-                #     cur = con.cursor()
-                #     b = "SELECT email_ids FROM email_ids;"
-                #     cur.execute(b)
-                #     result_temp = cur.fetchall()
-                #     if len(result_temp) > 0:
-                #         result_temp = [i[0] for i in result_temp]
-                #         if i[6] in result_temp:
-                #             q1 = f"update {hid}_mails set completed = 'DD' where date = %s;"
-                #             data = (i[2],)
-                #             cur.execute(q1, data)
-                #             con.commit()
-                #             with open('logs/dd_queries.log', 'a') as temp_fp:
-                #                 print(str(datetime.datetime.now()), str(cur.statement), file=temp_fp, sep=',')
+                with mysql.connector.connect(**conn_data) as con:
+                    cur = con.cursor()
+                    b = "SELECT email_ids FROM email_ids;"
+                    cur.execute(b)
+                    result_temp = cur.fetchall()
+                    if len(result_temp) > 0:
+                        result_temp = [i[0] for i in result_temp]
+                        if i[6] in result_temp:
+                            q1 = f"update {hid}_mails set completed = 'DD' where date = %s;"
+                            data = (i[2],)
+                            cur.execute(q1, data)
+                            con.commit()
+                            with open('logs/dd_queries.log', 'a') as temp_fp:
+                                print(str(datetime.datetime.now()), str(cur.statement), file=temp_fp, sep=',')
             except:
                 log_exceptions()
             print('in loop', len(i))
@@ -1561,12 +1561,12 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
                                 print(subject)
                             else:
                                 print(subject, "=", subject_result)
-                                # with mysql.connector.connect(**conn_data) as con:
-                                #     cur = con.cursor()
-                                #     q1 = f"update {hid}_mails set completed = 'SNM' where sno = %s;"
-                                #     data = (i[7],)
-                                #     cur.execute(q1, data)
-                                #     con.commit()
+                                with mysql.connector.connect(**conn_data) as con:
+                                    cur = con.cursor()
+                                    q1 = f"update {hid}_mails set completed = 'SNM' where sno = %s;"
+                                    data = (i[7],)
+                                    cur.execute(q1, data)
+                                    con.commit()
 
                                 # NEED to raise error subject not known
                                 # subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
