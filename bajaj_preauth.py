@@ -3,6 +3,7 @@ import sys
 import re
 
 import pdftotext
+from word2number import w2n
 
 from custom_app import set_flag_graphapi
 from custom_datadict import make_datadict
@@ -32,11 +33,11 @@ try:
             datadict[j] = tmp[j]
     if datadict['amount'] == "":
         try:
-            from word2number import w2n
             if tmp := re.search(r"(?<=Total Authorized amount).*", f):
                 tmp = tmp.group().replace(':', '').strip()
                 datadict['amount'] = str(w2n.word_to_num(tmp))
         except:
+            log_exceptions()
             pass
     data = [i for i in sys.argv[1:]]
     data2 = [datadict[i] for i in datadict]
@@ -49,9 +50,8 @@ try:
     diff = end - start
     diff = str(diff.total_seconds())
     data.append(diff)
-    ####for test purpose
-    # write(data)
-    # set_flag_graphapi(sys.argv[5], sys.argv[6], 'X',sys.argv[7])
+    write(data)
+    set_flag_graphapi(sys.argv[5], sys.argv[6], 'X',sys.argv[7])
 
 except:
     log_exceptions()

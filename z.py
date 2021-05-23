@@ -3,13 +3,13 @@ import subprocess
 import mysql.connector
 from custom_parallel import conn_data
 def run():
-    ins = "Max_Bupa"
-    ct = "ack"
-    fpath = "/home/akshay/temp/6036_CAACKRLTR01_AcknowledgmentofReceiptLetter_VP00269_P2021050711-35-25.pdf"
-    subject = "Cashless Claim settlement Letter: Patient Name: Chaya Bhanushali, Member ID: 1004055040, Pre-auth no: 21012700613, Policy No. 1240284300"
-    l_time = "07/12/2020 18:22:25"
+    ins = "bajaj"
+    ct = "preauth"
+    fpath = '/home/akshay/temp/6666_251421865_1.pdf'
+    subject = "Insured Name : MR RUPESH UTTAMRAO MORE Policy No : OG-21-2025-8451-00001863 ID Card No : 22-259329179 Ptn Name : RUPESH UTTAMRAO MORE Claim ID : 4652026 cashless Claim Approval"
+    l_time = "21/05/2021 19:15:44"
     hid = "noble"
-    mail_id = '1786552ccfbbcb2e'
+    mail_id = '1798f2cc001072db'
     subprocess.run(
               ["python", ins + "_" + ct + ".py", fpath, str(999999), ins,
                ct, subject, l_time, hid, mail_id])
@@ -108,6 +108,6 @@ def get_ins_process(subject, email):
     return ins, process
 
 if __name__ == "__main__":
-    # a = get_ins_process('Cashless Enhancement of Patient Name : Suresh Gorawade  (Father) Employee Name :Ravi Suresh Gorawade    (Emp ID : 10083327)', 'donotreply@fhpl.net')
+    a = get_ins_process('Final Cashless authorization for hospitalization of VISHAL VIJAY CHAUDHARY under Pre Authorization number:2021051300007', 'noreplyclaims@tataaigonline.co.in')
     run()
     pass
