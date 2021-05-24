@@ -8,7 +8,7 @@ from make_log import log_exceptions
 from push_api import api_update_trigger
 
 def get_api_url(hosp, process):
-    api_conn_data = {'host': "iclaimdev.caq5osti8c47.ap-south-1.rds.amazonaws.com",
+    api_conn_data = {'host': "database-iclaim.caq5osti8c47.ap-south-1.rds.amazonaws.com",
                  'user': "admin",
                  'password': "Welcome1!",
                  'database': 'portals'}

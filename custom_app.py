@@ -106,7 +106,7 @@ def create_settlement_folder(hosp, ins, date, filepath):
         return ""
 
 def get_api_url(hosp, process):
-    api_conn_data = {'host': "iclaimdev.caq5osti8c47.ap-south-1.rds.amazonaws.com",
+    api_conn_data = {'host': "database-iclaim.caq5osti8c47.ap-south-1.rds.amazonaws.com",
                  'user': "admin",
                  'password': "Welcome1!",
                  'database': 'portals'}
