@@ -40,7 +40,7 @@ def check_if_sub_and_ltime_exist(subject, l_time):
         return False
 
 
-def set_flag_graphapi(subject, l_time, flag, hospital):
+def set_flag_graphapi(subject, l_time, flag, hospital, **kwargs):
     try:
         hosp_dict = {
             'Max PPT': 'graphApi',
@@ -57,7 +57,7 @@ def set_flag_graphapi(subject, l_time, flag, hospital):
             b = f'select * from updation_detail_log where emailsubject = %s  and date = %s limit 1;'
             cur.execute(b, data)
             a = cur.fetchone()
-        if a is not None:
+        if a or kwargs:
             with mysql.connector.connect(**conn_data) as con:
                 cur = con.cursor()
                 b = f"update {hosp_dict[hospital]} set completed=%s where subject = %s and date = %s"

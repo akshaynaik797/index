@@ -3,6 +3,7 @@ import csv
 import uuid
 from multiprocessing import Pool
 from os.path import splitext, isfile, join
+from pathlib import Path
 from shutil import copyfile
 
 import mysql.connector
@@ -684,7 +685,7 @@ def inamdar(formparameter):
     # return str(msg)
     print(f"----Job is scheduled for every " , str(intervel) ,  " seconds")
 
-def noble(formparameter):
+def noble(formparameter, **kwargs):
     hospital_name = 'noble'
     print(hospital_name)
 
@@ -703,13 +704,23 @@ def noble(formparameter):
     r_credentials = []
     if r_credentials == []:
         result = []
+        q = f"select * from {hospital_name}_mails where completed=''"
+        if kwargs:
+            if kwargs['mode'] == "test":
+                q = f"select * from {hospital_name}_mails where sno='{kwargs['sno']}'"
         with mysql.connector.connect(**conn_data) as con:
             cur = con.cursor()
-            q = f"select * from {hospital_name}_mails where completed=''"
             cur.execute(q)
             result = cur.fetchall()
             if result == []:
                 return str([])
+        if kwargs:
+            result = [list(i) for i in result]
+            result[0][4] = kwargs['filepath']
+            dst = f'../{hospital_name}/new_attach/'
+            Path(dst).mkdir(parents=True, exist_ok=True)
+            dst = os.path.join(dst, os.path.split(kwargs['filepath'])[1])
+            copyfile(kwargs['filepath'], dst)
         process_copy_hospital(result, now, today, row_count_1, hospital_name)
     fo = open("defualt_time_read.txt", "a+")
     if (str(today) != str(tg[-1])):
@@ -2480,7 +2491,6 @@ sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[f
 #               max_instances=1)
 
 if __name__ == '__main__':
-    # noble(formparameter)
-    # app.run(host="0.0.0.0", port=9992)
-    sched.start()
-    pass
+    noble(formparameter, mode="test", sno="43002", filepath="/home/akshay/temp/61100123_.pdf")
+    ####for test purpose
+    # sched.start()
