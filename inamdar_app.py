@@ -1483,37 +1483,18 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
                         fil = fil[:-4]
                         fp = fil + '.pdf'
                         filepath = os.path.join(detach_dir, fp)
-                    if ins == 'Raksha':
-                        filename = fp
-                        subject = subject.replace("\r", "")
-                        subject = subject.replace("\n", "")
-                        subprocess.run(["python", "raksha_test.py", str(filename), str(ct), subject])
-                        with mysql.connector.connect(**conn_data) as con:
-                            cur = con.cursor()
-                            q1 = f"update {hid}_mails set completed = 'R' where date = %s;"
-                            data = (l_time,)
-                            cur.execute(q1, data)
-                            con.commit()
+
+                    if isfile(f'../{hid}/new_attach/' + fp):
+                        copyfile(f'../{hid}/new_attach/' + fp,
+                                 os.getcwd() + '/' + ins + '/attachments_pdf_' + ct + '/' + fp)
                     else:
-                        # try:
-                        #   fp2 = open(fp, "r")
-                        # except:
-                        #   pass
-                        #   fp2.close()
-                        # need to change code, sud be moved to appropriate folder, line 1869, remove html also--> akshay
+                        fp = fp.replace('.pdf', '.PDF')
                         if isfile(f'../{hid}/new_attach/' + fp):
+                            fp1 = fp.replace('.PDF', '.pdf')
                             copyfile(f'../{hid}/new_attach/' + fp,
-                                     os.getcwd() + '/' + ins + '/attachments_pdf_' + ct + '/' + fp)
-                        else:
-                            fp = fp.replace('.pdf', '.PDF')
-                            if isfile(f'../{hid}/new_attach/' + fp):
-                                fp1 = fp.replace('.PDF', '.pdf')
-                                copyfile(f'../{hid}/new_attach/' + fp,
-                                         os.getcwd() + '/' + ins + '/attachments_pdf_' + ct + '/' + fp1)
-                        break
-                        # fp = open(filepath, 'wb')
-                        # fp.write(mail.part.get_payload(decode=True))
-                        # fp.close()
+                                     os.getcwd() + '/' + ins + '/attachments_pdf_' + ct + '/' + fp1)
+                    break
+
         dol = 1
 
     except Exception as e:
@@ -2265,5 +2246,6 @@ sched.add_job(main, 'interval', seconds=int(formparameter['interval']), args=[fo
               max_instances=1, id='inamdar')
 
 if __name__ == '__main__':
-    # main(formparameter, 'noble', mode="test", sno="42111", filepath="/home/akshay/temp/8844_TUPEYOGINIFINAL.pdf")
+    ####for test purpose
+    # main(formparameter, 'noble', mode="test", sno="43426", filepath="/home/akshay/temp/8382_556222122140071.pdf")
     sched.start()
