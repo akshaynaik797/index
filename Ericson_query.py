@@ -1,5 +1,6 @@
 import sys
 import datetime
+import re
 
 import pdftotext
 
@@ -20,6 +21,10 @@ with open('Ericson/output.txt', 'r', encoding="utf-8") as myfile:
     f = myfile.read()
 try:
     datadict = make_datadict(f)
+    if tmp := re.search(r"(?<=CID)(?:.*\n.*?)(?P<preid>\d+)", f):
+        tmp = tmp.groupdict()
+        if 'preid' in tmp:
+            datadict['preid'] = tmp['preid']
     data = [i for i in sys.argv[1:9]]
     data2 = [datadict[i] for i in datadict]
     data.extend(data2)

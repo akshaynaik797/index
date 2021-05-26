@@ -1602,7 +1602,7 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
                     subprocess.run(
                         ["python", ins + "_" + ct + ".py", filepath, str(row_count_1), ins, ct, subject, l_time, hid,
                          mail_id, str(mail_table_sno)])
-                    trigger_alert()
+                    # trigger_alert()
             except Exception as e:
                 send_sms(f'exception in {subject}, {hid}')
                 log_exceptions()

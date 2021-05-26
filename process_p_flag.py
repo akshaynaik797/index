@@ -104,7 +104,7 @@ def process_p_flag_mails():
                 filepath = row['attach_path']
                 temp = get_pdf_ins_process(filepath)
                 ins, ct = temp['insurer'], temp['process']
-                subject, l_time, hid, mail_id = row['subject'], row['date'], hosp, row['id']
+                subject, l_time, hid, mail_id, sno = row['subject'], row['date'], hosp, row['id'], row['sno']
                 hid = hosp_dict[hosp]
                 if ins != '' and ct != '':
                     with open('logs/process_p_flag_mails.log', 'a') as tfp:
@@ -119,7 +119,7 @@ def process_p_flag_mails():
                             print(str(datetime.now()), cur.statement, sep=',', file=tfp)
                     subprocess.run(
                         ["python", ins + "_" + ct + ".py", filepath, str(row_count_1), ins, ct, subject, l_time, hid,
-                         mail_id])
+                         mail_id, sno])
                     with mysql.connector.connect(**conn_data) as con:
                         cur = con.cursor()
                         q = f"update {hosp} set process='classification', classification_time=%s where sno=%s"
