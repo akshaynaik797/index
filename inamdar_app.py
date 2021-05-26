@@ -1307,6 +1307,11 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
                             for row in r:
                                 subject_result = row[1]
                                 table_name = row[2]
+                                if id == "25" and table_name != 'settlement':
+                                    download_pdf_copy(s_r, mail, "icici_prudential", "General", row_count_1, subject, hid,
+                                                      l_time, files, mail_id, from_email, mail_table_sno)
+                                    flag = "true"
+                                    break
                                 if id == "35" and table_name != 'settlement':
                                     download_pdf_copy(s_r, mail, "alankit", "General", row_count_1, subject, hid,
                                                       l_time, files, mail_id, from_email, mail_table_sno)
@@ -1587,9 +1592,6 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
                     # else:
                     #     subprocess.run(["python", "main.py", start_date, end_date, ins, hid, uid, subject])
                 else:
-                    ins_file = ins + "_" + ct + ".py"
-                    if not os.path.exists(ins_file):
-                        send_sms(f"{ins_file} not exist, {hid}")
                     with mysql.connector.connect(**conn_data) as con:
                         cur = con.cursor()
                         q1 = f"update {hid}_mails set completed = 'D' where sno=%s;"
@@ -2263,5 +2265,5 @@ sched.add_job(main, 'interval', seconds=int(formparameter['interval']), args=[fo
               max_instances=1, id='inamdar')
 
 if __name__ == '__main__':
-    # main(formparameter, 'inamdar', mode="test", sno="5934", filepath="/home/akshay/temp/81047655_.pdf")
+    # main(formparameter, 'noble', mode="test", sno="42111", filepath="/home/akshay/temp/8844_TUPEYOGINIFINAL.pdf")
     sched.start()

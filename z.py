@@ -3,16 +3,16 @@ import subprocess
 import mysql.connector
 from custom_parallel import conn_data
 def run():
-    ins = "bajaj"
-    ct = "preauth"
-    fpath = '/home/akshay/temp/6666_251421865_1.pdf'
-    subject = "Insured Name : MR RUPESH UTTAMRAO MORE Policy No : OG-21-2025-8451-00001863 ID Card No : 22-259329179 Ptn Name : RUPESH UTTAMRAO MORE Claim ID : 4652026 cashless Claim Approval"
+    ins = "icici_prudential"
+    ct = "General"
+    fpath = '/home/akshay/temp/8844_TUPEYOGINIFINAL.pdf'
+    subject = "RE: Enhancement for DHANAJI RASAL  : PR7118685"
     l_time = "21/05/2021 19:15:44"
     hid = "noble"
     mail_id = '1798f2cc001072db'
     subprocess.run(
               ["python", ins + "_" + ct + ".py", fpath, str(999999), ins,
-               ct, subject, l_time, hid, mail_id])
+               ct, subject, l_time, hid, mail_id, '1'])
 
 def check():
     a, b = "/home/akshay/Downloads/rdp.csv", "/home/akshay/Downloads/ubuntu.csv"
@@ -108,6 +108,6 @@ def get_ins_process(subject, email):
     return ins, process
 
 if __name__ == "__main__":
-    a = get_ins_process('Final Cashless authorization for hospitalization of VISHAL VIJAY CHAUDHARY under Pre Authorization number:2021051300007', 'noreplyclaims@tataaigonline.co.in')
+    # a = get_ins_process('Ack : Pre-Authorization for SUBHADRA WANJLE : 77532993', 'quickresponse@careinsurance.com')
     run()
     pass
