@@ -81,11 +81,7 @@ def process_p_flag_mails():
             cur.execute(q1, (sno,))
             records = []
             result1 = cur.fetchall()
-            with open('logs/process_p_flag_mails.log', 'a') as tfp:
-                print(str(datetime.now()), table, batch, sno, sep=',', file=tfp)
             for i in result1:
-                with open('logs/process_p_flag_mails.log', 'a') as tfp:
-                    print(str(datetime.now()), str(i), sep=',', file=tfp)
                 t = {}
                 for k, v in zip(fields, i):
                     t[k] = v
@@ -115,18 +111,14 @@ def process_p_flag_mails():
                         q = f"update {hosp} set completed=%s where sno=%s"
                         cur.execute(q, (flag, row['sno'],))
                         con.commit()
-                        with open('logs/process_p_flag_mails.log', 'a') as tfp:
-                            print(str(datetime.now()), cur.statement, sep=',', file=tfp)
                     subprocess.run(
                         ["python", ins + "_" + ct + ".py", filepath, str(row_count_1), ins, ct, subject, l_time, hid,
-                         mail_id, sno])
+                         mail_id, str(sno)])
                     with mysql.connector.connect(**conn_data) as con:
                         cur = con.cursor()
                         q = f"update {hosp} set process='classification', classification_time=%s where sno=%s"
                         cur.execute(q, (row['sno'], str(datetime.now())))
                         con.commit()
-                        with open('logs/process_p_flag_mails.log', 'a') as tfp:
-                            print(str(datetime.now()), cur.statement, sep=',', file=tfp)
             except:
                 log_exceptions(row=row)
         change_active_flag_mail_storage_tables(table_name=hosp, flag=1)
