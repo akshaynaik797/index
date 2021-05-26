@@ -9,9 +9,9 @@ import mysql.connector
 from make_log import log_exceptions
 from custom_parallel import write, conn_data
 from custom_datadict import make_datadict
-from custom_app import set_flag_graphapi, create_settlement_folder
+from custom_app import set_flag_row, create_settlement_folder
 
-set_flag_graphapi(sys.argv[5], sys.argv[6], 'E',sys.argv[7])
+set_flag_row(sys.argv[9], 'E', sys.argv[7])
 
 
 start = datetime.datetime.now()
@@ -24,7 +24,7 @@ with open('fhpl/output.txt', 'r') as myfile:
     f = myfile.read()
 try:
     datadict = make_datadict(f)
-    data = [i for i in sys.argv[1:]]
+    data = [i for i in sys.argv[1:9]]
     data2 = [datadict[i] for i in datadict]
     data.extend(data2)
     data3 = str(datadict)
@@ -51,11 +51,11 @@ try:
                 q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                 data1 = (data[7], data[4], data[5], str(datetime.datetime.now()), filepath, '', sender, data[6])
                 cur.execute(q, data1)
-                set_flag_graphapi(sys.argv[5], sys.argv[6], 'S', sys.argv[7], test=1)
+                set_flag_row(sys.argv[9], 'S', sys.argv[7])
         except:
             log_exceptions()
     else:
-        write(data)
-        set_flag_graphapi(sys.argv[5], sys.argv[6], 'X',sys.argv[7])
+        write(data, sys.argv[9])
+        set_flag_row(sys.argv[9], 'X', sys.argv[7])
 except:
     log_exceptions()

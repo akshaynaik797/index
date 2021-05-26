@@ -37,7 +37,7 @@ def doa_dod_format(date):
     return date
 
 
-def write(x):
+def write(x, mail_table_sno):
     x = time_diff(x)
     jobid = 1
     with mysql.connector.connect(**conn_data) as mydb:
@@ -52,7 +52,7 @@ def write(x):
     run_no = 1
     with mysql.connector.connect(**conn_data) as mydb:
         cur = mydb.cursor()
-        q1 = f"SELECT runno FROM python.runs order by runno desc limit 1;"
+        q1 = f"SELECT runno FROM runs order by runno desc limit 1;"
         cur.execute(q1)
         result = cur.fetchone()
         if result is not None:
@@ -74,13 +74,14 @@ def write(x):
     apidict['lettertime'] = x[5]
     apidict['process'] = ""
     x[19] = str(apidict)
+    x.append(mail_table_sno)
     x = tuple(x)
     with mysql.connector.connect(**conn_data) as mydb:
         cur = mydb.cursor()
         q = f"insert into updation_detail_log ( file_path, runno, insurerid, process, emailsubject, date, hos_id, " \
             f"mail_id, preauthid, comment, policyno, memberid, amount, diagno, insname, doa, dod, corp, polhol, " \
-            f"apiresult, starttime, endtime, time_difference, status, jobid, lettertime)" \
-            f" values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+            f"apiresult, starttime, endtime, time_difference, status, jobid, lettertime, mail_table_sno)" \
+            f" values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
         cur.execute(q, x)
         mydb.commit()
 

@@ -5,7 +5,7 @@ import re
 import pdftotext
 
 from bad_pdf import text_from_pdf
-from custom_app import set_flag_graphapi
+from custom_app import set_flag_row
 from custom_datadict import make_datadict
 from custom_parallel import write
 from make_log import log_exceptions

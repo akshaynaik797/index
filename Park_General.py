@@ -7,9 +7,9 @@ import pdftotext
 from custom_datadict import make_datadict
 from custom_parallel import write
 from make_log import log_exceptions
-from custom_app import set_flag_graphapi
+from custom_app import set_flag_row
 try:
-    set_flag_graphapi(sys.argv[5], sys.argv[6], 'E',sys.argv[7])
+    set_flag_row(sys.argv[9], 'E', sys.argv[7])
 
     start = now = datetime.datetime.now()
     with open(sys.argv[1], "rb") as f:
@@ -43,7 +43,7 @@ try:
         status = 'Information Awaiting'
     sys.argv[4] = sys.argv[4] + ',' + status
     # datadict['status'] = status
-    data = [i for i in sys.argv[1:]]
+    data = [i for i in sys.argv[1:9]]
     datadict['insname'] = ''
     data2 = [datadict[i] for i in datadict]
     data.extend(data2)
@@ -56,7 +56,7 @@ try:
     diff = str(diff.total_seconds())
     data.append(diff)
     if 'Welcome' not in sys.argv[5] or 'your claim has been settled for' not in sys.argv[5]:
-        write(data)
-    set_flag_graphapi(sys.argv[5], sys.argv[6], 'X',sys.argv[7])
+        write(data, sys.argv[9])
+    set_flag_row(sys.argv[9], 'X', sys.argv[7])
 except:
     log_exceptions()

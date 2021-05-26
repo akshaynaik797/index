@@ -597,96 +597,55 @@ def get_file():
         return send_from_directory(dirname, filename=filename, as_attachment=True)
 
 
-@app.route('/add', methods=["POST", "GET"])
-def add():
-    formparameter = {}
-    formparameter['interval'] = (request.form["intervel"])
-    formparameter['fromtime'] = request.form["fromtime"]
-    formparameter['totime'] = request.form["totime"]
-    formparameter['id'] = request.form["id"]
-    formparameter['hid'] = request.form["hid"]
-    formparameter['count'] = request.form["count"]
-    formparameter['pid'] = request.form["pid"]
-    formparameter['nowtime'] = akdatetime.now()
-    formparameter['formnowtime'] = request.form['formnowtime']
-    # formparameter['datetime'] = request.form['datetime']
-
-    with open('nowtime.txt', 'a') as f:
-        f.write('form ' + str(formparameter['nowtime']) + '\n')
-
-    try:
-        if formparameter['formnowtime'] != '' and formparameter['interval'] != '':
-            formparameter['nowtime'] = akdatetime.strptime(formparameter['formnowtime'], '%d/%m/%Y %H:%M:%S')
-    except Exception as e:
-        log_exceptions()
-        pass
-
-    # formparameter['interval'] = 'interval1'
-    # if formparameter['interval'] == 'interval1':
-    #  deltaMessage()
-
-    if formparameter['interval'] != '':
-        # if now time is given from screen, then it will be considered, else akdatetime.now along with date
-        print("Scheduler is called.")
-        sched = BackgroundScheduler(daemon=False)
-        sched.add_job(inamdar, 'interval', seconds=int(formparameter['interval']), args=[formparameter], max_instances=1)
-        sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-                      max_instances=1)
-        sched.add_job(ils, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-                      max_instances=1)
-        sched.add_job(ils_dumdum, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-                      max_instances=1)
-        sched.add_job(ils_agartala, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-                      max_instances=1)
-        sched.add_job(ils_howrah, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-                      max_instances=1)
-        sched.start()
-    else:
-        inamdar(formparameter)
-    return "success"
-
-
 # @app.route('/add', methods=["POST", "GET"])
-def inamdar(formparameter):
-    hospital_name = 'inamdar'
-    print(hospital_name)
+# def add():
+#     formparameter = {}
+#     formparameter['interval'] = (request.form["intervel"])
+#     formparameter['fromtime'] = request.form["fromtime"]
+#     formparameter['totime'] = request.form["totime"]
+#     formparameter['id'] = request.form["id"]
+#     formparameter['hid'] = request.form["hid"]
+#     formparameter['count'] = request.form["count"]
+#     formparameter['pid'] = request.form["pid"]
+#     formparameter['nowtime'] = akdatetime.now()
+#     formparameter['formnowtime'] = request.form['formnowtime']
+#     # formparameter['datetime'] = request.form['datetime']
+#
+#     with open('nowtime.txt', 'a') as f:
+#         f.write('form ' + str(formparameter['nowtime']) + '\n')
+#
+#     try:
+#         if formparameter['formnowtime'] != '' and formparameter['interval'] != '':
+#             formparameter['nowtime'] = akdatetime.strptime(formparameter['formnowtime'], '%d/%m/%Y %H:%M:%S')
+#     except Exception as e:
+#         log_exceptions()
+#         pass
+#
+#     # formparameter['interval'] = 'interval1'
+#     # if formparameter['interval'] == 'interval1':
+#     #  deltaMessage()
+#
+#     if formparameter['interval'] != '':
+#         # if now time is given from screen, then it will be considered, else akdatetime.now along with date
+#         print("Scheduler is called.")
+#         sched = BackgroundScheduler(daemon=False)
+#         sched.add_job(inamdar, 'interval', seconds=int(formparameter['interval']), args=[formparameter], max_instances=1)
+#         sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
+#                       max_instances=1)
+#         sched.add_job(ils, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
+#                       max_instances=1)
+#         sched.add_job(ils_dumdum, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
+#                       max_instances=1)
+#         sched.add_job(ils_agartala, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
+#                       max_instances=1)
+#         sched.add_job(ils_howrah, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
+#                       max_instances=1)
+#         sched.start()
+#     else:
+#         inamdar(formparameter)
+#     return "success"
 
-    with mysql.connector.connect(**conn_data) as mydb:
-        cur = mydb.cursor()
-        q1 = f"insert into runs (date) value ('{str(datetime.datetime.now())}');"
-        cur.execute(q1)
-        mydb.commit()
-    # # from datetime import datetime as akdatetime
-    intervel = formparameter["interval"]
-    nowtime = formparameter['nowtime']
-    row_count_1 = 1
-    now = datetime.datetime.now()
-    today = datetime.date.today()
-    today = today.strftime('%d-%b-%Y')
-    r_credentials = []
-    if r_credentials == []:
-        result = []
-        with mysql.connector.connect(**conn_data) as con:
-            cur = con.cursor()
-            q = f"select * from {hospital_name}_mails where completed=''"
-            cur.execute(q)
-            result = cur.fetchall()
-            if result == []:
-                return str([])
-        process_copy_hospital(result, now, today, row_count_1, hospital_name)
-    fo = open("defualt_time_read.txt", "a+")
-    if (str(today) != str(tg[-1])):
-        fo.write(str(today) + '\n')
-    now = datetime.datetime.now()
-    today = datetime.date.today()
-    today = today.strftime('%d-%b-%Y')
-    # subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
-    # subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
-    # return str(msg)
-    print(f"----Job is scheduled for every " , str(intervel) ,  " seconds")
-
-def noble(formparameter, **kwargs):
-    hospital_name = 'noble'
+def main(formparameter, hospital_name, **kwargs):
     print(hospital_name)
 
     with mysql.connector.connect(**conn_data) as mydb:
@@ -733,154 +692,6 @@ def noble(formparameter, **kwargs):
     # return str(msg)
     print(f"----Job is scheduled for every " ,intervel ," seconds")
 
-def ils(formparameter):
-    hospital_name = 'ils'
-    print(hospital_name)
-
-    with mysql.connector.connect(**conn_data) as mydb:
-        cur = mydb.cursor()
-        q1 = f"insert into runs (date) value ('{str(datetime.datetime.now())}');"
-        cur.execute(q1)
-        mydb.commit()
-    # # from datetime import datetime as akdatetime
-    intervel = formparameter["interval"]
-    nowtime = formparameter['nowtime']
-    row_count_1 = 1
-    now = datetime.datetime.now()
-    today = datetime.date.today()
-    today = today.strftime('%d-%b-%Y')
-    r_credentials = []
-    if r_credentials == []:
-        result = []
-        with mysql.connector.connect(**conn_data) as con:
-            cur = con.cursor()
-            q = f"select * from {hospital_name}_mails where completed=''"
-            cur.execute(q)
-            result = cur.fetchall()
-            if result == []:
-                return str([])
-        process_copy_hospital(result, now, today, row_count_1, hospital_name)
-    fo = open("defualt_time_read.txt", "a+")
-    if (str(today) != str(tg[-1])):
-        fo.write(str(today) + '\n')
-    now = datetime.datetime.now()
-    today = datetime.date.today()
-    today = today.strftime('%d-%b-%Y')
-    # subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
-    # subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
-    # return str(msg)
-    print(f"----Job is scheduled for every " , intervel , " seconds")
-
-def ils_dumdum(formparameter):
-    hospital_name = 'ils_dumdum'
-    print(hospital_name)
-    with mysql.connector.connect(**conn_data) as mydb:
-        cur = mydb.cursor()
-        q1 = f"insert into runs (date) value ('{str(datetime.datetime.now())}');"
-        cur.execute(q1)
-        mydb.commit()
-    # # from datetime import datetime as akdatetime
-    intervel = formparameter["interval"]
-    nowtime = formparameter['nowtime']
-    row_count_1 = 1
-    now = datetime.datetime.now()
-    today = datetime.date.today()
-    today = today.strftime('%d-%b-%Y')
-    r_credentials = []
-    if r_credentials == []:
-        result = []
-        with mysql.connector.connect(**conn_data) as con:
-            cur = con.cursor()
-            q = f"select * from {hospital_name}_mails where completed=''"
-            cur.execute(q)
-            result = cur.fetchall()
-            if result == []:
-                return str([])
-        process_copy_hospital(result, now, today, row_count_1, hospital_name)
-    fo = open("defualt_time_read.txt", "a+")
-    if (str(today) != str(tg[-1])):
-        fo.write(str(today) + '\n')
-    now = datetime.datetime.now()
-    today = datetime.date.today()
-    today = today.strftime('%d-%b-%Y')
-    # subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
-    # subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
-    # return str(msg)
-    print(f"----Job is scheduled for every " , intervel , " seconds")
-
-def ils_agartala(formparameter):
-    hospital_name = 'ils_agartala'
-    print(hospital_name)
-    with mysql.connector.connect(**conn_data) as mydb:
-        cur = mydb.cursor()
-        q1 = f"insert into runs (date) value ('{str(datetime.datetime.now())}');"
-        cur.execute(q1)
-        mydb.commit()
-    # # from datetime import datetime as akdatetime
-    intervel = formparameter["interval"]
-    nowtime = formparameter['nowtime']
-    row_count_1 = 1
-    now = datetime.datetime.now()
-    today = datetime.date.today()
-    today = today.strftime('%d-%b-%Y')
-    r_credentials = []
-    if r_credentials == []:
-        result = []
-        with mysql.connector.connect(**conn_data) as con:
-            cur = con.cursor()
-            q = f"select * from {hospital_name}_mails where completed=''"
-            cur.execute(q)
-            result = cur.fetchall()
-            if result == []:
-                return str([])
-        process_copy_hospital(result, now, today, row_count_1, hospital_name)
-    fo = open("defualt_time_read.txt", "a+")
-    if (str(today) != str(tg[-1])):
-        fo.write(str(today) + '\n')
-    now = datetime.datetime.now()
-    today = datetime.date.today()
-    today = today.strftime('%d-%b-%Y')
-    # subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
-    # subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
-    # return str(msg)
-    print(f"----Job is scheduled for every " , intervel , " seconds")
-
-def ils_howrah(formparameter):
-    hospital_name = 'ils_howrah'
-    print(hospital_name)
-    with mysql.connector.connect(**conn_data) as mydb:
-        cur = mydb.cursor()
-        q1 = f"insert into runs (date) value ('{str(datetime.datetime.now())}');"
-        cur.execute(q1)
-        mydb.commit()
-    # # from datetime import datetime as akdatetime
-    intervel = formparameter["interval"]
-    nowtime = formparameter['nowtime']
-    row_count_1 = 1
-    now = datetime.datetime.now()
-    today = datetime.date.today()
-    today = today.strftime('%d-%b-%Y')
-    r_credentials = []
-    if r_credentials == []:
-        result = []
-        with mysql.connector.connect(**conn_data) as con:
-            cur = con.cursor()
-            q = f"select * from {hospital_name}_mails where completed=''"
-            cur.execute(q)
-            result = cur.fetchall()
-            if result == []:
-                return str([])
-        process_copy_hospital(result, now, today, row_count_1, hospital_name)
-    fo = open("defualt_time_read.txt", "a+")
-    if (str(today) != str(tg[-1])):
-        fo.write(str(today) + '\n')
-    now = datetime.datetime.now()
-    today = datetime.date.today()
-    today = today.strftime('%d-%b-%Y')
-    # subprocess.run(["python", "updation.py", "0", "max", "4", str(today)])
-    # subprocess.run(["python", "updation.py", "0", "max", "5", str(now)])
-    # return str(msg)
-    print(f"----Job is scheduled for every " , intervel , " seconds")
 
 def proces_park(now, today, mail, row_count_1, hid, fg, mode, nowtime):
     for i in range(0, len(mail.id_list)):
@@ -1454,49 +1265,19 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
         print(hid, 'in process copy ', len(result), today, row_count_1)
         result_cnt, processed_cnt = len(result), 0
         for j, i in enumerate(result):
-            try:
-                with mysql.connector.connect(**conn_data) as con:
-                    cur = con.cursor()
-                    q1 = f"insert into {hid}_jobs values (%s, %s, %s);"
-                    data = (j, i[1], i[2])
-                    cur.execute(q1, data)
-                    con.commit()
-                with mysql.connector.connect(**conn_data) as con:
-                    cur = con.cursor()
-                    q1 = f"update {hid}_mails set completed = 'p' where date = %s;"
-                    data = (i[2],)
-                    cur.execute(q1, data)
-                    con.commit()
-                with mysql.connector.connect(**conn_data) as con:
-                    cur = con.cursor()
-                    b = "SELECT email_ids FROM email_ids;"
-                    cur.execute(b)
-                    result_temp = cur.fetchall()
-                    if len(result_temp) > 0:
-                        result_temp = [i[0] for i in result_temp]
-                        if i[6] in result_temp:
-                            q1 = f"update {hid}_mails set completed = 'DD' where date = %s;"
-                            data = (i[2],)
-                            cur.execute(q1, data)
-                            con.commit()
-                            with open('logs/dd_queries.log', 'a') as temp_fp:
-                                print(str(datetime.datetime.now()), str(cur.statement), file=temp_fp, sep=',')
-            except:
-                log_exceptions()
-            print('in loop', len(i))
-            #   today = datetime.date.today()
-            #   today = today.strftime('%d-%b-%Y')
-            #   with mysql.connector.connect(**conn_data) as con:
-            #     cur = con.cursor()
-            #     b = "SELECT COUNT (*) FROM updation_log"
-            #     cur.execute(b)
-            #     r = cur.fetchall()
-            #     print(r)
-            #     # log_api_data('r', r)
-            #     max_row = r[0][0]
-            #     row_count_1 = max_row + 1
-
-            subject, l_time, files, from_email, hid, mail_id = i[1], i[2], i[4], i[6], hid, i[0]
+            subject, l_time, files, from_email, hid, mail_id, mail_table_sno = i[1], i[2], i[4], i[6], hid, i[0], i[7]
+            with mysql.connector.connect(**conn_data) as con:
+                cur = con.cursor()
+                q1 = f"insert into {hid}_jobs values (%s, %s, %s);"
+                data = (j, i[1], i[2])
+                cur.execute(q1, data)
+                con.commit()
+            with mysql.connector.connect(**conn_data) as con:
+                cur = con.cursor()
+                q1 = f"update {hid}_mails set completed = 'p' where sno=%s;"
+                data = (mail_table_sno,)
+                cur.execute(q1, data)
+                con.commit()
             subject = subject.replace("\r", "")
             subject = subject.replace("\n", "")
             if check_if_sub_and_ltime_exist(subject, l_time):
@@ -1528,17 +1309,17 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
                                 table_name = row[2]
                                 if id == "35" and table_name != 'settlement':
                                     download_pdf_copy(s_r, mail, "alankit", "General", row_count_1, subject, hid,
-                                                      l_time, files, mail_id, from_email)
+                                                      l_time, files, mail_id, from_email, mail_table_sno)
                                     flag = "true"
                                     break
                                 if id == "17" and table_name != 'settlement':
                                     download_pdf_copy(s_r, mail, "Park", "General", row_count_1, subject, hid, l_time,
-                                                      files, mail_id, from_email)
+                                                      files, mail_id, from_email, mail_table_sno)
                                     flag = "true"
                                     break
                                 if id == "36" and table_name != 'settlement':
                                     download_pdf_copy(s_r, mail, "tata", "General", row_count_1, subject, hid, l_time,
-                                                      files, mail_id, from_email)
+                                                      files, mail_id, from_email, mail_table_sno)
                                     flag = "true"
                                     break
                                 if subject.find(subject_result) != -1:  # and ic_name!='star' :
@@ -1565,19 +1346,19 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
                                         if subject.find('Settlement') != -1:
                                             table_name = 'settlement'
                                     download_pdf_copy(s_r, mail, ic_name, table_name, row_count_1, subject, hid, l_time,
-                                                      files, mail_id, from_email)
+                                                      files, mail_id, from_email, mail_table_sno)
                                     flag = "true"
                                     break
                             if (flag == "true"):
                                 print(subject)
                             else:
                                 print(subject, "=", subject_result)
-                                with mysql.connector.connect(**conn_data) as con:
-                                    cur = con.cursor()
-                                    q1 = f"update {hid}_mails set completed = 'SNM' where sno = %s;"
-                                    data = (i[7],)
-                                    cur.execute(q1, data)
-                                    con.commit()
+                                # with mysql.connector.connect(**conn_data) as con:
+                                #     cur = con.cursor()
+                                #     q1 = f"update {hid}_mails set completed = 'SNM' where sno = %s;"
+                                #     data = (i[7],)
+                                #     cur.execute(q1, data)
+                                #     con.commit()
 
                                 # NEED to raise error subject not known
                                 # subprocess.run(["python", "updation.py", "2", "max1", "1", str(row_count_1)])
@@ -1640,7 +1421,7 @@ def process_copy_hospital(result, now, today, row_count_1, hid):
         log_exceptions()
 
 
-def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, files, mail_id, sender):
+def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, files, mail_id, sender, mail_table_sno):
     print("pdf downloading")
     now = datetime.datetime.now()
     dol = 0
@@ -1779,8 +1560,8 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
                             q = f"insert into settlement_mails (`id`,`subject`,`date`,`sys_time`,`attach_path`,`completed`,`sender`,`hospital`, `folder`, `process`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                             data = (mail_id, subject, l_time, str(datetime.datetime.now()), filepath, '', sender, hid, 'INBOX', 'index')
                             cur.execute(q, data)
-                            q1 = f"update {hid}_mails set completed = 'S' where date = %s and subject=%s;"
-                            data1 = (l_time, subject)
+                            q1 = f"update {hid}_mails set completed = 'S' where sno=%s;"
+                            data1 = (mail_table_sno,)
                             cur.execute(q1, data1)
                             con.commit()
                     except:
@@ -1811,8 +1592,8 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
                         send_sms(f"{ins_file} not exist, {hid}")
                     with mysql.connector.connect(**conn_data) as con:
                         cur = con.cursor()
-                        q1 = f"update {hid}_mails set completed = 'D' where date = %s and subject=%s;"
-                        data = (l_time, subject)
+                        q1 = f"update {hid}_mails set completed = 'D' where sno=%s;"
+                        data = (mail_table_sno,)
                         cur.execute(q1, data)
                         con.commit()
                     with open(f"logs/{hid}_download_pdf.log", "a+") as fp:
@@ -1820,7 +1601,7 @@ def download_pdf_copy(s_r, mail, ins, ct, row_count_1, subject, hid, l_time, fil
                         fp.write(row)
                     subprocess.run(
                         ["python", ins + "_" + ct + ".py", filepath, str(row_count_1), ins, ct, subject, l_time, hid,
-                         mail_id])
+                         mail_id, str(mail_table_sno)])
                     trigger_alert()
             except Exception as e:
                 send_sms(f'exception in {subject}, {hid}')
@@ -2476,21 +2257,11 @@ formparameter['interval'] = interval
 formparameter['nowtime'] = ''
 sched = BackgroundScheduler(daemon=False)
 sched.add_job(process_p_flag_mails, 'interval', seconds=300, max_instances=1)
-sched.add_job(inamdar, 'interval', seconds=int(formparameter['interval']), args=[formparameter], max_instances=1)
-sched.add_job(noble, 'interval', seconds=int(formparameter['interval']), args=[formparameter], max_instances=1)
-
-
-
-# sched.add_job(ils, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-#               max_instances=1)
-# sched.add_job(ils_dumdum, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-#               max_instances=1)
-# sched.add_job(ils_agartala, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-#               max_instances=1)
-# sched.add_job(ils_howrah, 'interval', seconds=int(formparameter['interval']), args=[formparameter],
-#               max_instances=1)
+sched.add_job(main, 'interval', seconds=int(formparameter['interval']), args=[formparameter, 'noble'],
+              max_instances=1, id='noble')
+sched.add_job(main, 'interval', seconds=int(formparameter['interval']), args=[formparameter, 'inamdar'],
+              max_instances=1, id='inamdar')
 
 if __name__ == '__main__':
-    noble(formparameter, mode="test", sno="43002", filepath="/home/akshay/temp/61100123_.pdf")
-    ####for test purpose
-    # sched.start()
+    # main(formparameter, 'inamdar', mode="test", sno="5934", filepath="/home/akshay/temp/81047655_.pdf")
+    sched.start()

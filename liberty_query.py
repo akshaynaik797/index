@@ -5,6 +5,7 @@ import sys
 
 import pdftotext
 
+from custom_app import set_flag_row
 from make_log import log_exceptions
 from mult1 import write
 
@@ -93,12 +94,13 @@ try:
     # subprocess.run(["python", "updation.py", "1", "max", "10", 'NA'])
 
     try:
-        data = [i for i in sys.argv[1:]]
+        data = [i for i in sys.argv[1:9]]
         data2 = [datadict[i] for i in datadict]
         data.extend(data2)
         data3 = str(datadict).replace('{', '\{').replace('}', '\}')
         data.append(data3)
-        write(data)
+        write(data, sys.argv[9])
+        set_flag_row(sys.argv[9], 'X', sys.argv[7])
         a = 1
         # subprocess.run(
         #     ["python", "test_api.py", datadict['preid'], datadict['amount'], datadict['polno'], ' ', 'Information Awaiting', sys.argv[6], sys.argv[1], ' ', datadict['memid'], datadict['pname'], ])

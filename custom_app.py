@@ -40,7 +40,7 @@ def check_if_sub_and_ltime_exist(subject, l_time):
         return False
 
 
-def set_flag_graphapi(subject, l_time, flag, hospital, **kwargs):
+def set_flag_row(mail_table_sno, flag, hospital):
     try:
         hosp_dict = {
             'Max PPT': 'graphApi',
@@ -51,20 +51,22 @@ def set_flag_graphapi(subject, l_time, flag, hospital, **kwargs):
             'ils_agartala': 'ils_agartala_mails',
             'ils_dumdum': 'ils_dumdum_mails'
         }
-        data, data1 = (subject, l_time), (flag, subject, l_time, )
-        with mysql.connector.connect(**conn_data) as con:
-            cur = con.cursor()
-            b = f'select * from updation_detail_log where emailsubject = %s  and date = %s limit 1;'
-            cur.execute(b, data)
-            a = cur.fetchone()
-        if a or kwargs:
+        row = None
+        if flag == 'X':
             with mysql.connector.connect(**conn_data) as con:
                 cur = con.cursor()
-                b = f"update {hosp_dict[hospital]} set completed=%s where subject = %s and date = %s"
-                cur.execute(b, data1)
+                b = f'select * from updation_detail_log where mail_table_sno=%s limit 1;'
+                cur.execute(b, (mail_table_sno,))
+                row = cur.fetchone()
+        if flag != 'X' or row:
+            with mysql.connector.connect(**conn_data) as con:
+                cur = con.cursor()
+                b = f"update {hosp_dict[hospital]} set completed=%s where sno=%s"
+                cur.execute(b, (flag, mail_table_sno))
                 con.commit()
+        pass
     except:
-        log_exceptions(data1=data1)
+        log_exceptions(data=[mail_table_sno, flag, hospital])
 
 def get_ins_process(subject, email):
     ins, process = "", ""
