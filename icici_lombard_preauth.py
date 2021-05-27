@@ -25,11 +25,11 @@ try:
         datadict['preid'] = datadict['preid'].split('-')[0]
     if datadict['preid'] == '':
         if 'Cashless Request' in sys.argv[5]:
-            preid = re.compile(r"(?<=Cashless Request).*(is Approved)").search()
+            preid = re.search(r"(?<=Cashless Request).*?(?=is Approved)", sys.argv[5])
             if preid is not None:
                 datadict['preid'] = preid.group().strip()
         if 'Enhacement Request' in sys.argv[5]:
-            preid = re.compile(r"(?<=Enhacement Request).*(is Approved)").search()
+            preid = re.search(r"(?<=Enhacement Request).*?(?=is Approved)", sys.argv[5])
             if preid is not None:
                 datadict['preid'] = preid.group().strip()
 
