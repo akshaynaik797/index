@@ -123,6 +123,42 @@ def process_p_flag_mails():
                 log_exceptions(row=row)
         change_active_flag_mail_storage_tables(table_name=hosp, flag=1, process_p=1)
 
+def process_p_test(hosp, sno, filepath):
+    mails_dict = {}
+    fields = ("id","subject","date","sys_time","attach_path","completed","sender","sno","folder","process")
+    with mysql.connector.connect(**conn_data) as con:
+        cur = con.cursor()
+        q1 = f"select * from {hosp} where  sno=%s limit 1"
+        cur.execute(q1, (sno,))
+        records = []
+        i = cur.fetchone()
+        row = {}
+        for k, v in zip(fields, i):
+            row[k] = v
+        with mysql.connector.connect(**conn_data) as con:
+            cur = con.cursor()
+            q = f"update {hosp} set completed='pp' where sno=%s"
+            cur.execute(q, (row['sno'],))
+            con.commit()
+        row_count_1 = 1
+        temp = get_pdf_ins_process(filepath)
+        ins, ct = temp['insurer'], temp['process']
+        subject, l_time, hid, mail_id, sno = row['subject'], row['date'], hosp, row['id'], row['sno']
+        hid = hosp_dict[hosp]
+        if ins != '' and ct != '':
+            with open('logs/process_p_flag_mails.log', 'a') as tfp:
+                print(str(datetime.now()), ins, ct, sep=',', file=tfp)
+            flag = 'DDD'
+            with mysql.connector.connect(**conn_data) as con:
+                cur = con.cursor()
+                q = f"update {hosp} set completed=%s where sno=%s"
+                cur.execute(q, (flag, row['sno'],))
+                con.commit()
+            subprocess.run(
+                ["python", ins + "_" + ct + ".py", filepath, str(row_count_1), ins, ct, subject, l_time, hid,
+                 mail_id, str(sno)])
 
 if __name__ == '__main__':
+    ####for test purpose
+    process_p_test('noble_mails', '43444', '/home/akshay/temp/2541_PreAuthQueryLe_RC-HS21-12429738_2_20210526164821156.pdf')
     process_p_flag_mails()
