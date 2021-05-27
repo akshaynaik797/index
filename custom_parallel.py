@@ -103,6 +103,9 @@ def get_status(x):
     x.append(status)
     a = x[19]
     a = a.replace("'", '"')
+    a = a.replace('\xad', '')
+    a = a.replace('\u00ad', '')
+    a = a.replace('\N{SOFT HYPHEN}', '')
     a = json.loads(a)
     a['status'] = status
     x[19] = json.dumps(a)

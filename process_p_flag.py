@@ -160,5 +160,5 @@ def process_p_test(hosp, sno, filepath):
 
 if __name__ == '__main__':
     ####for test purpose
-    process_p_test('noble_mails', '43444', '/home/akshay/temp/2541_PreAuthQueryLe_RC-HS21-12429738_2_20210526164821156.pdf')
+    # process_p_test('noble_mails', '43444', '/home/akshay/temp/2541_PreAuthQueryLe_RC-HS21-12429738_2_20210526164821156.pdf')
     process_p_flag_mails()
