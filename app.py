@@ -205,7 +205,7 @@ def insert_sms_mails():
         q = 'select subject, email from exceptions_sms_mails'
         cur.execute(q)
         exception_mails = cur.fetchall()
-        q = 'select table_name, hospital from mail_storage_tables where active=1'
+        q = 'select table_name, hospital from mail_storage_tables where active=1 and process_p_active=1'
         cur.execute(q)
         result = cur.fetchall()
         for table, hosp in result:

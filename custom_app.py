@@ -129,10 +129,13 @@ def change_active_flag_mail_storage_tables(**kwargs):
     if 'table_name' in kwargs:
         q = 'update mail_storage_tables set active=%s where table_name=%s'
         params = [kwargs['flag'], kwargs['table_name']]
+    if 'process_p' in kwargs:
+        q = q.replace('where', ", process_p_active=%s where")
+        params.insert(1, kwargs['flag'])
     with mysql.connector.connect(**conn_data) as con:
         cur = con.cursor()
         cur.execute(q, params)
         con.commit()
 
 if __name__ == "__main__":
-    change_active_flag_mail_storage_tables(table_name="noble_mails", flag=1)
+    change_active_flag_mail_storage_tables(table_name="noble_mails", flag=0, process_p=1)

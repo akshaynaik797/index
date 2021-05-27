@@ -88,7 +88,7 @@ def process_p_flag_mails():
                 records.append(t)
             mails_dict[table] = records
     for hosp in mails_dict:
-        change_active_flag_mail_storage_tables(table_name=hosp, flag=0)
+        change_active_flag_mail_storage_tables(table_name=hosp, flag=0, process_p=1)
         for row in mails_dict[hosp]:
             try:
                 with mysql.connector.connect(**conn_data) as con:
@@ -121,7 +121,7 @@ def process_p_flag_mails():
                         con.commit()
             except:
                 log_exceptions(row=row)
-        change_active_flag_mail_storage_tables(table_name=hosp, flag=1)
+        change_active_flag_mail_storage_tables(table_name=hosp, flag=1, process_p=1)
 
 
 if __name__ == '__main__':
