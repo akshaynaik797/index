@@ -100,7 +100,7 @@ try:
         data2 = [datadict[i] for i in datadict]
         data.extend(data2)
         data3 = str(datadict).replace('{', '\{').replace('}', '\}')
-        data.append(data3)
+        data.append(datadict)
         write(data, sys.argv[9])
         set_flag_row(sys.argv[9], 'X', sys.argv[7])
 

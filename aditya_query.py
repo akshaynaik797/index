@@ -26,7 +26,7 @@ if sys.argv[1].find('_pdf_') == -1:
         data2 = [datadict[i] for i in datadict]
         data.extend(data2)
         data3 = str(datadict)
-        data.append(data3)
+        data.append(datadict)
         end = datetime.datetime.now()
         data.append(str(start))
         data.append(str(end))
@@ -45,7 +45,7 @@ else:
         data2 = [datadict[i] for i in datadict]
         data.extend(data2)
         data3 = str(datadict)
-        data.append(data3)
+        data.append(datadict)
         end = datetime.datetime.now()
         data.append(str(start))
         data.append(str(end))
