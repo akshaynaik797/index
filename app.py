@@ -164,7 +164,7 @@ def send_sms_text(mobile_no, body):
 
 def check_date():
     from datetime import datetime
-    fields = ('table_id','table_name','active','flag','id','subject','date','hospital', 'sno')
+    fields = ('table_id','table_name','active','flag', 'process_p_active', 'id','subject','date','hospital', 'sno')
     records = []
     record_dict = {}
     with mysql.connector.connect(**conn_data) as con:
@@ -188,12 +188,10 @@ def check_date():
                 mid, subject, date, sno = records[0]
                 date1 = datetime.strptime(records[0][2], '%d/%m/%Y %H:%M:%S')
                 date2 = datetime.strptime(records[1][2], '%d/%m/%Y %H:%M:%S')
-                flag = ''
                 if date1 >= date2:
                     flag = 'VALID'
                 else:
                     flag = 'INVALID'
-
                 q = f"update mail_storage_tables set flag=%s, id=%s, subject=%s, date=%s, sno=%s where table_name=%s"
                 cur.execute(q, (flag, mid, subject, date, sno, table_name))
         con.commit()
@@ -244,7 +242,7 @@ def insert_sms_mails():
                     log_exceptions(j=j)
 @app.route("/get_mail_storage_tables", methods=["POST"])
 def get_mail_storage_tables():
-    fields = ('table_id','table_name','active','flag','id','subject','date','hospital')
+    fields = ('table_id','table_name','active', 'process_p_active', 'flag','id','subject','date','hospital')
     result = []
     record_dict = {}
     with mysql.connector.connect(**conn_data) as con:
