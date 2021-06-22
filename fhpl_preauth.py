@@ -24,6 +24,12 @@ try:
     if datadict['pname'] == '':
         if tmp := re.search(r"(?<=Patient's Name\n).*?(?=\n *PinCode)", f):
             datadict['pname'] = tmp.group().strip()
+    if tmp := re.search(r"(?<=Details of Approval for Cashless Request are given below:\n).*", f):
+        tmp = tmp.group().replace('RS.', '').strip()
+        try:
+            datadict['amount'] = re.split(r" +", tmp)[1]
+        except:
+            pass
     data = [i for i in sys.argv[1:9]]
     data2 = [datadict[i] for i in datadict]
     data.extend(data2)
